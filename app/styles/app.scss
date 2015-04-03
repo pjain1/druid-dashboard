@@ -1,0 +1,20 @@
+.ember-date-time-picker {
+	margin-bottom: 10px;
+	.input-group-addon {
+		width: 20px;
+	}
+}
+
+.top-k-list {
+	.tooltip-inner {
+		max-width: 300px;
+		word-wrap: break-word;
+	}
+
+	.value-cell {
+		color: #bbb;
+		.suffix {
+			color: #999;
+		}
+	}
+}

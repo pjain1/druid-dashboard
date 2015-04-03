@@ -1,0 +1,17 @@
+<thead>
+	<tr>
+		<th colspan="2">{{content.title}}</th>
+	</tr>
+</thead>
+<tbody>
+	{{#each content.data as |dat|}}
+	<tr {{action 'rowClicked' dat.label}}>
+		<td>
+			{{truncated-string dat.label width=34}}
+		</td>
+		<td width=60 class='text-right value-cell'>
+			{{number-with-suffix dat.amount}}
+		</td>
+	</tr>
+	{{/each}}
+</tbody>
