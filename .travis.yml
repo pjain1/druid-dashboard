@@ -1,0 +1,30 @@
+---
+language: node_js
+
+node_js:
+ - "0.12.2"
+ - "iojs"
+
+sudo: false
+
+cache:
+  directories:
+    - node_modules
+env:
+  matrix:
+    - EMBER_TRY_SCENARIO=ember-1.10
+    - EMBER_TRY_SCENARIO=ember-release
+    - EMBER_TRY_SCENARIO=ember-beta
+    - EMBER_TRY_SCENARIO=ember-canary
+
+before_install:
+  - "npm config set spin false"
+  - "npm install -g npm@^2"
+
+install:
+  - npm install -g bower
+  - npm install
+  - bower install
+
+script:
+  - ./travis-ci-ember-try.sh
