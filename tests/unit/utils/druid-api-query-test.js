@@ -1,4 +1,4 @@
-import druidApiQuery from '../../../utils/druid-api-query';
+import {doQuery, aggs} from '../../../utils/druid-api-query';
 import {
 	module, test
 }
@@ -10,13 +10,17 @@ import json from '../../helpers/json';
 module('druidApiQuery');
 
 // Replace this with your real tests.
-test('it works', function(assert) {
-	var result = druidApiQuery();
-	assert.ok(result);
+test('it exists', function(assert) {
+	assert.ok(doQuery);
 });
 
 test('topN query works', function(assert) {
+  assert.expect(1);
 	var server = new Pretender();
+
+  server.post('/druid/v2', function () {
+    return [200, {}, "{}"];
+  });
 
 	doQuery({
 			queryType: 'topN',
@@ -29,7 +33,12 @@ test('topN query works', function(assert) {
 			intervals: "2015-04-10T23:24:43.046Z/2015-04-15T23:24:43.046Z",
 			filter: {}
 		}
-	);
+	).then(function() {
+    debugger;
+
+  }, function (err) {
+    throw err;
+  });
 
 	server.shutdown();
 });
