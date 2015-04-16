@@ -2,6 +2,7 @@ import Ember from 'ember';
 import Moment from 'moment';
 import momentAsMs from 'druid-ui/utils/moment-as-ms';
 import momentAsString from 'druid-ui/utils/moment-as-str';
+import DashboardDruidClient from 'druid-ui/utils/dashboard-druid-client';
 
 function computeEndTime() {
   var startTime = new Moment().startOf('minute');
@@ -15,8 +16,17 @@ function computeEndTime() {
 };
 
 export default Ember.Controller.extend({
+  druidClient: function () {
+    return new DashboardDruidClient();
+  }.property(),
+  actions: {
+    tryQuery: function () {
+      this.get('druidClient').timeSeriesQuery('wikipedia',
+    '2015-04-15T16:30:00.000Z', '2015-04-16T17:30:00.000Z', 'minute')
+    }
+  },
 	queryParams: ['layoutMode', 'timeGranularity', 'sd', 'ed'],
-    
+
     allTimeGranularities: [
     	{id: 0, label: 'Minute'},
     	{id: 1, label: 'Hour'},
