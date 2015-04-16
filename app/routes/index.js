@@ -18,6 +18,6 @@ import Ember from 'ember';
 
 export default Ember.Route.extend(
   {
-    redirect: function () { this.transitionTo('datasource.index'); }
+    redirect: function () { this.transitionTo('datasources.index'); }
   }
 );

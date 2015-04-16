@@ -32,6 +32,19 @@
 
     {{content-for 'head-footer'}}
     {{content-for 'test-head-footer'}}
+    <style type="text/css">
+      #qunit-testrunner-toolbar [type="checkbox"] + label {
+        margin-left: 25px;
+      }
+
+      #qunit-testrunner-toolbar [type="checkbox"] + label:before {
+        left: -20px;
+      }
+
+      #qunit-testrunner-toolbar #qunit-modulefilter {
+        display: inherit;
+      }
+    </style>
   </head>
   <body>
 

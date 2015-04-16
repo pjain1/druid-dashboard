@@ -18,31 +18,35 @@
 
 var EmberApp = require('ember-cli/lib/broccoli/ember-app');
 
-var app = new EmberApp();
-app.import('bower_components/ember/ember-template-compiler.js');
-app.import('bower_components/d3/d3.js');
-app.import('bower_components/lodash/lodash.js');
-
-app.import('bower_components/nvd3/build/nv.d3.js');
-app.import('bower_components/nvd3/build/nv.d3.css');
-app.import('bower_components/bootstrap/dist/css/bootstrap.css');
-app.import('bower_components/bootstrap/dist/js/bootstrap.js');
-
-
-app.import('bower_components/bootstrap-datetimepicker/css/bootstrap-datetimepicker.css');
-app.import('bower_components/bootstrap-datetimepicker/js/bootstrap-datetimepicker.js');
-app.import('bower_components/bootstrap/dist/fonts/glyphicons-halflings-regular.woff', {
-  destDir: 'fonts'
+var app = new EmberApp({
+	sassOptions: {
+		includePaths: ['bower_components/materialize/sass']
+	}
 });
-app.import('bower_components/bootstrap/dist/fonts/glyphicons-halflings-regular.woff2', {
-  destDir: 'fonts'
-});
+// app.import('bower_components/ember/ember-template-compiler.js');
+// app.import('bower_components/d3/d3.js');
+// app.import('bower_components/lodash/lodash.js');
 
-app.import('bower_components/bootstrap-select/dist/css/bootstrap-select.css');
-app.import('bower_components/bootstrap-select/dist/js/bootstrap-select.js');
-app.import('bower_components/bootstrap-select/dist/css/bootstrap-select.css.map', {
-	destDir: 'assets'
-});
+// app.import('bower_components/nvd3/build/nv.d3.js');
+// app.import('bower_components/nvd3/build/nv.d3.css');
+// app.import('bower_components/bootstrap/dist/css/bootstrap.css');
+// app.import('bower_components/bootstrap/dist/js/bootstrap.js');
+
+
+// app.import('bower_components/bootstrap-datetimepicker/css/bootstrap-datetimepicker.css');
+// app.import('bower_components/bootstrap-datetimepicker/js/bootstrap-datetimepicker.js');
+// app.import('bower_components/bootstrap/dist/fonts/glyphicons-halflings-regular.woff', {
+//   destDir: 'fonts'
+// });
+// app.import('bower_components/bootstrap/dist/fonts/glyphicons-halflings-regular.woff2', {
+//   destDir: 'fonts'
+// });
+
+// app.import('bower_components/bootstrap-select/dist/css/bootstrap-select.css');
+// app.import('bower_components/bootstrap-select/dist/js/bootstrap-select.js');
+// app.import('bower_components/bootstrap-select/dist/css/bootstrap-select.css.map', {
+// 	destDir: 'assets'
+// });
 // Use `app.import` to add additional libraries to the generated
 // output files.
 //

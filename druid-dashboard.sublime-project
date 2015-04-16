@@ -1,0 +1,11 @@
+{
+	"folders":
+	[
+		{
+			"name": "Druid Dashboard",
+			"follow_symlinks": true, 
+			"path": ".",
+			"folder_exclude_patterns": [".bower*", ".idea", "node_modules", "bower_components", "tmp"]
+		}
+	]
+}

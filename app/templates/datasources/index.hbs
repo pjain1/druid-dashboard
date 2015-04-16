@@ -1,0 +1,17 @@
+<div class="row">
+  <div class="col s12">
+  <h4>Please select a datasource...</h4>
+  </div>
+</div>	
+
+<div class="row">
+  <div class="col s12">
+	  <ul class="collection">
+	  	{{#each content as |item|}}
+	  		{{#link-to 'datasource.show' item.id class="collection-item " tagName='li'}}
+		  		<span class="title">{{text-titlecase item.id}}</span>
+		  	{{/link-to}}	
+	    {{/each}}
+	  </ul>
+	</div>
+</div>

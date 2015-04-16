@@ -15,18 +15,15 @@
  */
 
 import Ember from 'ember';
-import config from './config/environment';
 
-var Router = Ember.Router.extend({
-	location: config.locationType
+export default Ember.Route.extend({
+  queryParams: {
+    datasource: {
+      refreshModel: true,
+    }
+  },
+
+  model: function (params) {
+    return this.store.find('datasource-info', params.id);
+  }
 });
-
-Router.map(function() {
-	this.resource('datasources', function () {});
-	this.resource('datasource', function() {
-		this.route('show', {path: ':id'});
-		this.route('show_old', {path: ':id/old'});
-	});
-});
-
-export default Router;
