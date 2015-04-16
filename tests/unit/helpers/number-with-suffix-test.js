@@ -17,11 +17,12 @@
 import {
   numberWithSuffix
 } from 'druid-ui/helpers/number-with-suffix';
+import { module, test } from 'qunit';
 
 module('NumberWithSuffixHelper');
 
 // Replace this with your real tests.
-test('it works', function() {
-  var result = numberWithSuffix(42);
-  ok(result);
+test('it works', function(assert) {
+  var result = numberWithSuffix([42]);
+  assert.ok(result);
 });

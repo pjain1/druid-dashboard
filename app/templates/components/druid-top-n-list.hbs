@@ -1,0 +1,21 @@
+<h5>{{title}}</h5>
+<table>
+  <thead>
+    <th width='80%'></th>
+    <th width='20%'></th>
+  </thead>
+  <tbody>
+  {{#each content as |row|}}
+    <tr>
+      <td>
+      {{#if row.label}}
+        {{row.label}}
+      {{else}}
+        <span class="empty-val">(empty)</span>
+      {{/if}}
+      </td>
+      <td>{{row.value}}</td>
+    </tr>
+  {{/each}}
+  </tbody>
+</table>

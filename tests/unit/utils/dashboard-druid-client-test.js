@@ -18,7 +18,7 @@ test('it generates the correct payload for topN queries', function (assert) {
 
   assert.deepEqual(client._generateTopNQueryPayload(
     'wikipedia',
-    '2015-04-15T16:30:00.000Z', '2015-04-16T17:30:00.000Z', 'minute'
+    '2015-04-15T16:30:00.000Z', '2015-04-16T17:30:00.000Z', 'all', 'continent', 'average'
     ), topNRequestPayload, 'Correct top-N payload');
 });
 

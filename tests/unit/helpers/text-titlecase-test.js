@@ -7,6 +7,6 @@ module('TextTitlecaseHelper');
 
 // Replace this with your real tests.
 test('it works', function(assert) {
-  var result = textTitlecase(42);
+  var result = textTitlecase(['capitalize me']);
   assert.ok(result);
 });

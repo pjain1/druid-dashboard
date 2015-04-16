@@ -1,3 +1,4 @@
+import Ember from 'ember';
 import moment from 'moment';
 
 export default function momentAsStr(key, fmt) {
@@ -9,5 +10,5 @@ export default function momentAsStr(key, fmt) {
 			this.set(key, moment(val).valueOf());
 			return val;
 		}
-	})
+	});
 }

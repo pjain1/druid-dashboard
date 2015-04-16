@@ -23,7 +23,8 @@ export default Ember.Route.extend({
     }
   },
 
-  model: function (params) {
+  model(params) {
     return this.store.find('datasource-info', params.id);
   }
+
 });
