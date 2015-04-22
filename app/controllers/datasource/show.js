@@ -20,6 +20,8 @@ import momentAsMs from 'druid-ui/utils/moment-as-ms';
 import momentAsString from 'druid-ui/utils/moment-as-str';
 import DruidClient from 'druid-ui/utils/druid-client';
 
+var extend = Ember.$.extend;
+
 function computeEndTime() {
   var startTime = new Moment().startOf('minute');
   var theMinute = startTime.minute();
@@ -40,27 +42,29 @@ var aggs = {
     DruidClient.postAggs.div('average', ['total_value', 'events'])
   ]
 };
-var metricDisplayOrder = ['average', 'events', 'total_value'];
+// var metricDisplayOrder = ['average', 'events', 'total_value'];
 
 
 export default Ember.Controller.extend({
 
   actions: {
-    tryQuery: function () {
+    tryQuery() {
       this.get('druidClient').timeSeriesQuery('wikipedia',
-    '2015-04-15T16:30:00.000Z', '2015-04-16T17:30:00.000Z', 'minute');
+        '2015-04-15T16:30:00.000Z', '2015-04-16T17:30:00.000Z', 'minute');
     }
   },
-	queryParams: ['layoutMode', 'timeGranularity', 'sd', 'ed'],
+  queryParams: ['layoutMode', 'timeGranularity', 'sd', 'ed'],
 
   druidClient: new DruidClient(),
 
   timeSeriesData: Ember.computed({
     get() {
 
-      var params = _.extend(this.baseQueryPayload(), { granularity: 'minute' } );
+      var params = extend(this.baseQueryPayload(), {
+        granularity: 'minute'
+      });
       return Ember.ArrayProxy.extend({
-        init: function () {
+        init() {
           this._super(...arguments);
           var client = this.get('client');
 
@@ -68,53 +72,70 @@ export default Ember.Controller.extend({
             data => this.set('content', data)
           );
         }
-      }).create({client: this.get('druidClient')});
+      }).create({
+        client: this.get('druidClient')
+      });
     }
-  }).readOnly(),
+  }),
 
   topKData: Ember.computed('model.dimensions', {
     get() {
-
-      return this.get('model.dimensions').map(function(dim) {
+      return this.get('model.dimensions').map(dim => {
         var metric = 'average';
-        var params = _.extend(this.baseQueryPayload(), { granularity: 'all', dimension: dim, metric: metric, threshold: 10 } );
-
+        var params = extend(this.baseQueryPayload(), {
+          granularity: 'all',
+          dimension: dim,
+          metric: metric,
+          threshold: 10
+        });
         return {
           dimension: dim,
           data: Ember.ArrayProxy.extend({
-            init: function () {
+            init() {
               this._super(...arguments);
 
               var client = this.get('client');
 
-              client.topN(params).then(
-                function(data) {
-                  this.set(
-                    'content', data[0].result.map(function(r) { return {label: r[dim], value: r[metric]};})
-                  );
-                }.bind(this)
-              );
+              client.topN(params).then(data => {
+                var results = Ember.isEmpty(data) ? [] : data[0].result.map(r => {
+                  return {
+                    label: r[dim],
+                    value: r[metric]
+                  };
+                });
+                this.set('content', results);
+              });
             }
-          }).create({client: this.get('druidClient')})
+          }).create({
+            client: this.get('druidClient')
+          })
         };
-      }.bind(this));
+      });
     }
-  }).readOnly(),
+  }),
 
-  allTimeGranularities: [
-  	{id: 0, label: 'Minute'},
-  	{id: 1, label: 'Hour'},
-  	{id: 2, label: 'Day'}
-  ],
+  allTimeGranularities: [{
+    id: 0,
+    label: 'Minute'
+  }, {
+    id: 1,
+    label: 'Hour'
+  }, {
+    id: 2,
+    label: 'Day'
+  }],
   timeGranularity: 0,
 
-  allLayoutModes: [
-  	{id: 0, label: 'Top/Bottom'},
-  	{id: 1, label: 'Left/Right'}
-  ],
+  allLayoutModes: [{
+    id: 0,
+    label: 'Top/Bottom'
+  }, {
+    id: 1,
+    label: 'Left/Right'
+  }],
   layoutMode: 1,
 
- 	startDate: computeEndTime().subtract(1, 'h'),
+  startDate: computeEndTime().subtract(1, 'h'),
   endDate: computeEndTime(),
   sd: momentAsMs('startDate'),
   ed: momentAsMs('endDate'),
@@ -122,10 +143,9 @@ export default Ember.Controller.extend({
   startDateStr: momentAsString('startDate', 'll'),
   endDateStr: momentAsString('endDate', 'll'),
 
-  baseQueryPayload: function() {
-    return _.extend(
-      {
-        dataSource: 'metrics_cluster',
+  baseQueryPayload() {
+    return extend({
+        dataSource: this.get('model.id'),
         intervals: this.get('startDate').toISOString() + '/' + this.get('endDate').toISOString()
       },
       aggs

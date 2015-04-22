@@ -1,6 +1,14 @@
 {{druid-navbar}}
 
 <div id="content" class="container">
-	{{outlet}}
+  <div class="toast-container">
+    {{#each flashMessages.queue as |flash|}}
+      {{#flash-message class='toast' flash=flash as |component flash|}}
+        {{component.flashType}}: {{flash.message}}
+      {{/flash-message}}
+    {{/each}}
+  </div>
+  {{outlet}}
 </div>
+
 <footer></footer>

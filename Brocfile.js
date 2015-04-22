@@ -25,7 +25,7 @@ var app = new EmberApp({
 });
 // app.import('bower_components/ember/ember-template-compiler.js');
 // app.import('bower_components/d3/d3.js');
-app.import('bower_components/lodash/lodash.js');
+// app.import('bower_components/lodash/lodash.js');
 
 // app.import('bower_components/nvd3/build/nv.d3.js');
 // app.import('bower_components/nvd3/build/nv.d3.css');
