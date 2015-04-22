@@ -66,6 +66,16 @@
     {{/each}}
   </div>
   <div class="col s12 m5">
-    <h4>Time Series: {{timeSeriesData.length}}</h4>
+    {{#each _timeSeriesArrays as |series|}}
+      {{#materialize-card title=(text-titlecase series.metric)}}
+        {{#materialize-card-content}}
+          {{#nf-graph width=268 height=150}}
+            {{#nf-graph-content}}
+              {{nf-line data=series.points interpolator="linear"}}
+            {{/nf-graph-content}}
+          {{/nf-graph}}
+        {{/materialize-card-content}}
+      {{/materialize-card}}
+    {{/each}}
   </div>
 </div>

@@ -35,12 +35,12 @@ function computeEndTime() {
 
 var aggs = {
   aggregations: [
-    DruidClient.aggs.longSum('events'),
-    DruidClient.aggs.doubleSum('total_value')
+    DruidClient.aggs.longSum('clicks'),
+    DruidClient.aggs.doubleSum('impressions')
   ],
   postAggregations: [
-    DruidClient.postAggs.div('clicks', ['total_value', 'events']),
-    DruidClient.postAggs.div('impressions', ['total_value', 'events'])
+    // DruidClient.postAggs.div('clicks', ['total_value', 'events']),
+    // DruidClient.postAggs.div('impressions', ['total_value', 'events'])
   ]
 };
 // var metricDisplayOrder = ['average', 'events', 'total_value'];
@@ -76,6 +76,36 @@ export default Ember.Controller.extend({
       }).create({
         client: this.get('druidClient')
       });
+    }
+  }),
+  _timeSeriesArrays: Ember.computed('timeSeriesData', 'timeSeriesData.content.[]', {
+    get() {
+      var data = this.get('timeSeriesData.content');
+      if (Ember.isEmpty(data)) {
+        return [];
+      }
+      var o = {};
+      for (var i = 0; i < (data || []).length; i += 1) {
+        var x = Moment(data[i].timestamp).unix();
+        for (var j in data[i].result) {
+          var y = data[i].result[j];
+          if(Ember.isEmpty(o[j])) {
+            o[j] = [{y,x}];
+          }
+          else {
+            o[j].push({y,x});
+          }
+        }
+      }
+
+      var arrs = [];
+      for (var k in o) {
+        arrs.push({
+          metric: k,
+          points: o[k]
+        });
+      }
+      return arrs;
     }
   }),
 
