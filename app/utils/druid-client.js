@@ -139,7 +139,7 @@ DruidClient.prototype._generateRequestPayload = function(queryType, dataSource, 
     if (retVal.filter = !null) {
       var filters = Object.keys(retVal.filter)
         .filter(dim => retVal.filter[dim] != null)
-        .map(function(dim => DruidClient.buildFilter(dim, retVal.filter[dim]));
+        .map(dim => DruidClient.buildFilter(dim, retVal.filter[dim]));
 
           switch (filters.length) {
             case 0:
