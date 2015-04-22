@@ -1,0 +1,26 @@
+{{#if icon}}
+    <i {{bind-attr class="icon :prefix"}}></i>
+{{/if}}
+<label {{bind-attr for=id}}>
+  {{#unless _noSelection}}
+    {{label}}
+  {{else}}
+    &nbsp;
+  {{/unless}}
+</label>
+
+{{ember-selectize
+  content=content
+  selection=selection
+  persist=persist
+  multiple=multiple
+  optionLabelPath=optionLabelPath
+  optionValuePath=optionValuePath
+  delimiter=delimiter
+  placeholder=label
+  create-item=createItemAction
+}}
+
+<small class="red-text">
+  {{#if errors}} {{errors.firstObject}} {{else}} &nbsp; {{/if}}
+</small>

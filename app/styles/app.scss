@@ -1,10 +1,15 @@
 @import 'materialize';
+@import 'components/md-selectize';
 
 /* FIXME: Workaround for https://github.com/Dogfalo/materialize/issues/1079 */
 @each $mdi-icon-name, $mdi-icon-value in $mdi-list-icons {
   .#{$mdi-prefix}#{$mdi-icon-name}:before {
     content: "\""+ $mdi-icon-value +"\"";
   }
+}
+
+body {
+  background: #eee;
 }
 
 .avatar-circle {
@@ -21,4 +26,26 @@
   right: 0px;
   max-width: 100%;
   z-index: 1;
+}
+.druid-top-n-list {
+  th {
+    height: 0;
+    padding: 0;
+  }
+  .card .card-content .card-title {
+    line-height: 24px;
+  }
+  .card .card-title {
+    font-size: 20px;
+  }
+
+  table {
+    tbody tr:first-child td {
+      padding-top: 15px;
+    }
+    td, th {
+      padding: 5px;
+      font-size: 12px;
+    }
+  }
 }

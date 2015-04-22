@@ -39,7 +39,8 @@ var aggs = {
     DruidClient.aggs.doubleSum('total_value')
   ],
   postAggregations: [
-    DruidClient.postAggs.div('average', ['total_value', 'events'])
+    DruidClient.postAggs.div('clicks', ['total_value', 'events']),
+    DruidClient.postAggs.div('impressions', ['total_value', 'events'])
   ]
 };
 // var metricDisplayOrder = ['average', 'events', 'total_value'];
@@ -57,11 +58,11 @@ export default Ember.Controller.extend({
 
   druidClient: new DruidClient(),
 
-  timeSeriesData: Ember.computed({
+  timeSeriesData: Ember.computed('timeGranularity', {
     get() {
 
       var params = extend(this.baseQueryPayload(), {
-        granularity: 'minute'
+        granularity: this.get('timeGranularity')
       });
       return Ember.ArrayProxy.extend({
         init() {
@@ -78,10 +79,11 @@ export default Ember.Controller.extend({
     }
   }),
 
-  topKData: Ember.computed('model.dimensions', {
+  topKData: Ember.computed('model.dimensions', 'topKRankingMetric', {
     get() {
+      var metric = this.get('topKRankingMetric');
+
       return this.get('model.dimensions').map(dim => {
-        var metric = 'average';
         var params = extend(this.baseQueryPayload(), {
           granularity: 'all',
           dimension: dim,
@@ -113,27 +115,12 @@ export default Ember.Controller.extend({
       });
     }
   }),
+  topKRankingMetric: 'clicks',
+  allTimeGranularities: ['minute', 'hour', 'day'],
+  timeGranularity: 'minute',
 
-  allTimeGranularities: [{
-    id: 0,
-    label: 'Minute'
-  }, {
-    id: 1,
-    label: 'Hour'
-  }, {
-    id: 2,
-    label: 'Day'
-  }],
-  timeGranularity: 0,
-
-  allLayoutModes: [{
-    id: 0,
-    label: 'Top/Bottom'
-  }, {
-    id: 1,
-    label: 'Left/Right'
-  }],
-  layoutMode: 1,
+  allLayoutModes: ['Top/Bottom','Left/Right'],
+  layoutMode: 'Left/Right',
 
   startDate: computeEndTime().subtract(1, 'h'),
   endDate: computeEndTime(),
