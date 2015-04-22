@@ -1,26 +1,44 @@
 import ajax from 'ic-ajax';
 import Ember from 'ember';
 
-var BASIC_REQUIRED_PARAMS = ['dataSource', 'intervals'];
-var TOPN_REQUIRED_PARAMS = ['aggregations', 'postAggregations'];
-var TIMESERIES_REQUIRED_PARAMS = ['aggregations', 'postAggregations'];
-// var GROUPBY_REQUIRED_PARAMS = ['dimensions'];
-// var SEARCH_REQUIRED_PARAMS = ['query'];
-
-
-
-
-
+var BASIC_REQUIRED_PARAMS = ['dataSource', 'intervals', 'granularity'];
+var REQUIRED_PARAMS = {
+  topN: BASIC_REQUIRED_PARAMS.concat(['metric', 'dimension', 'threshold', 'aggregations']),
+  timeseries: BASIC_REQUIRED_PARAMS.concat(['aggregations'])
+};
 
 function DruidClient() {
 
 }
 
-DruidClient.prototype._createMetricSpec = function (type, field, name) {
+function createMetricSpec(type, field, name) {
   return {type: type, fieldName: field, name: (name || field)};
+}
+
+DruidClient.aggs = {
+  metricSpec: createMetricSpec,
+  longSum: createMetricSpec.bind(null, 'longSum'),
+  doubleSum: createMetricSpec.bind(null, 'doubleSum')
 };
 
-DruidClient.prototype._createFilter = function(dim, vals) {
+DruidClient.postAggs = {
+  div: function(name, fields) {
+    var theFields = fields.map(
+      function(val){
+        if (typeof val === 'string') {
+          return this.field(val);
+        }
+        return val;
+      }.bind(this)
+    );
+    return {type: "arithmetic", name: name, fn: "/", fields: theFields};
+  },
+  field: function(name) {
+    return {type: "fieldAccess", fieldName: name, name: name};
+  }
+};
+
+DruidClient.buildFilter = function(dim, vals) {
   function createSelector(val) {
     return { type: 'selector', dimension: dim, value: val };
   }
@@ -35,13 +53,20 @@ DruidClient.prototype._createFilter = function(dim, vals) {
   }
 };
 
-DruidClient.prototype.query = function(queryType, dataSource, intervals, params) {
-  Ember.assert('Missing required parameter: queryType', queryType);
-  Ember.assert('Missing required parameter: dataSource', dataSource);
-  Ember.assert('Missing required parameter: intervals', intervals);
+DruidClient.prototype.timeseries = function(params) {
+  return this.query('timeseries', params.dataSource, params);
+};
+
+DruidClient.prototype.topN = function(params) {
+  return this.query('topN', params.dataSource, params);
+};
+
+DruidClient.prototype.query = function(queryType, dataSource, params) {
+  Ember.assert(queryType + ': Missing required parameter: queryType', queryType);
+  Ember.assert(queryType + ': Missing required parameter: dataSource', dataSource);
   this._validateParams(queryType, params);
 
-  var requestPayload = this._generateRequestPayload(queryType, dataSource, intervals, params);
+  var requestPayload = this._generateRequestPayload(queryType, dataSource, params);
   return ajax(`/druid/v2/?queryType=${queryType}`, {
     type: 'POST',
     contentType: 'application/json',
@@ -52,14 +77,11 @@ DruidClient.prototype.query = function(queryType, dataSource, intervals, params)
 
 DruidClient.prototype._requiredParamsForQueryType = function (queryType) {
   Ember.assert('queryType must be provided', queryType);
-  switch(queryType) {
-    case 'topN':
-      return BASIC_REQUIRED_PARAMS.concat(TOPN_REQUIRED_PARAMS);
-    case 'timeseries':
-      return BASIC_REQUIRED_PARAMS.concat(TIMESERIES_REQUIRED_PARAMS);
-    default:
-      throw `queryType ${queryType} is not supported`;
+  var requiredParams = REQUIRED_PARAMS[queryType];
+  if (requiredParams == null) {
+    throw `queryType ${queryType} is not supported`;
   }
+  return requiredParams;
 };
 
 DruidClient.prototype._validateParams = function(queryType, params) {
@@ -71,22 +93,29 @@ DruidClient.prototype._validateParams = function(queryType, params) {
   });
 };
 
-DruidClient.prototype._generateRequestPayload = function(queryType, dataSource, intervals, opts) {
-  var options = opts || {};
-  var payload = {
-    queryType,
-    dataSource,
-    intervals
-  };
-  if (options.granularity) {payload.granularity = options.granularity;}
-  if (options.dimension) {payload.dimension = options.dimension;}
-  if (options.metric) {payload.metric = options.metric;}
-  if (options.threshold) {payload.threshold = options.threshold;}
-  if (options.aggregations) {payload.aggregations = options.aggregations;}
-  if (options.postAggregations) {payload.postAggregations = options.postAggregations;}
-  payload.filter = options.filter || null;
+DruidClient.prototype._generateRequestPayload = function(queryType, dataSource, opts) {
+  var retVal = _.extend({}, opts, { queryType, dataSource, });
 
-  return payload;
+  if (retVal.filter =! null) {
+    var filters = Object.keys(retVal.filter)
+      .filter(function(dim){ return retVal.filter[dim] != null; })
+      .map(function(dim) {
+             return DruidClient.buildFilter(dim, retVal.filter[dim]);
+           });
+
+    switch (filters.length) {
+      case 0:
+        retVal.filter = null;
+        break;
+      case 1:
+        retVal.filter = filters[0];
+        break;
+      default:
+        retVal.filter = {type: 'and', fields: filters};
+    }
+  }
+
+  return retVal;
 };
 
 export default DruidClient;

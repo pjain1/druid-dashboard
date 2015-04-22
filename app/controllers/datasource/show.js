@@ -18,7 +18,7 @@ import Ember from 'ember';
 import Moment from 'moment';
 import momentAsMs from 'druid-ui/utils/moment-as-ms';
 import momentAsString from 'druid-ui/utils/moment-as-str';
-import DashboardDruidClient from 'druid-ui/utils/dashboard-druid-client';
+import DruidClient from 'druid-ui/utils/druid-client';
 
 function computeEndTime() {
   var startTime = new Moment().startOf('minute');
@@ -31,6 +31,18 @@ function computeEndTime() {
   return startTime;
 }
 
+var aggs = {
+  aggregations: [
+    DruidClient.aggs.longSum('events'),
+    DruidClient.aggs.doubleSum('total_value')
+  ],
+  postAggregations: [
+    DruidClient.postAggs.div('average', ['total_value', 'events'])
+  ]
+};
+var metricDisplayOrder = ['average', 'events', 'total_value'];
+
+
 export default Ember.Controller.extend({
 
   actions: {
@@ -41,22 +53,51 @@ export default Ember.Controller.extend({
   },
 	queryParams: ['layoutMode', 'timeGranularity', 'sd', 'ed'],
 
-  druidClient: new DashboardDruidClient(),
+  druidClient: new DruidClient(),
 
   timeSeriesData: Ember.computed({
     get() {
-      return this.druidClient.timeSeriesQueryResult('wikipedia', '2015-04-15T16:30:00.000Z', '2015-04-16T17:30:00.000Z', 'minute');
+
+      var params = _.extend(this.baseQueryPayload(), { granularity: 'minute' } );
+      return Ember.ArrayProxy.extend({
+        init: function () {
+          this._super(...arguments);
+          var client = this.get('client');
+
+          client.timeseries(params).then(
+            data => this.set('content', data)
+          );
+        }
+      }).create({client: this.get('druidClient')});
     }
   }).readOnly(),
 
   topKData: Ember.computed('model.dimensions', {
     get() {
-      return this.get('model.dimensions').map(dim => {
+
+      return this.get('model.dimensions').map(function(dim) {
+        var metric = 'average';
+        var params = _.extend(this.baseQueryPayload(), { granularity: 'all', dimension: dim, metric: metric, threshold: 10 } );
+
         return {
           dimension: dim,
-          data: this.druidClient.topNQueryResult('wikipedia', '2015-04-15T16:30:00.000Z', '2015-04-16T17:30:00.000Z', 'all', dim, 'average')
+          data: Ember.ArrayProxy.extend({
+            init: function () {
+              this._super(...arguments);
+
+              var client = this.get('client');
+
+              client.topN(params).then(
+                function(data) {
+                  this.set(
+                    'content', data[0].result.map(function(r) { return {label: r[dim], value: r[metric]};})
+                  );
+                }.bind(this)
+              );
+            }
+          }).create({client: this.get('druidClient')})
         };
-      });
+      }.bind(this));
     }
   }).readOnly(),
 
@@ -79,5 +120,15 @@ export default Ember.Controller.extend({
   ed: momentAsMs('endDate'),
 
   startDateStr: momentAsString('startDate', 'll'),
-  endDateStr: momentAsString('endDate', 'll')
+  endDateStr: momentAsString('endDate', 'll'),
+
+  baseQueryPayload: function() {
+    return _.extend(
+      {
+        dataSource: 'metrics_cluster',
+        intervals: this.get('startDate').toISOString() + '/' + this.get('endDate').toISOString()
+      },
+      aggs
+    );
+  }
 });

@@ -43,7 +43,7 @@ command-line option.
 
 Also, you will need to adjust the metrics that are queried for to line up with the metrics that you have available
 in your data source.  This can be done by editting the `aggs` variable and the `metricDisplayOrder` variables in
-`controllers/datasource/show.js`.  In a perfect world, this would be something a bit easier to configure (i.e. not
+`app/controllers/datasource/show.js`.  In a perfect world, this would be something a bit easier to configure (i.e. not
 require a code change), but it is what it is for now.
 
 ### Code Generators
