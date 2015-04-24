@@ -1,7 +1,7 @@
 {
   "name": "druid-ui",
-  "version": "0.0.0",
-  "description": "Small description for druid-ui goes here",
+  "version": "0.0.1",
+  "description": "A data exploration tool for Druid broker nodes",
   "directories": {
     "doc": "doc",
     "test": "tests"
