@@ -10,14 +10,20 @@ sudo: false
 cache:
   directories:
     - node_modules
+
 env:
-  matrix:
-    - EMBER_TRY_SCENARIO=ember-1.10
-    - EMBER_TRY_SCENARIO=ember-release
-    - EMBER_TRY_SCENARIO=ember-beta
-    - EMBER_TRY_SCENARIO=ember-canary
+  - EMBER_TRY_SCENARIO=default
+  - EMBER_TRY_SCENARIO=ember-release
+  - EMBER_TRY_SCENARIO=ember-beta
+  - EMBER_TRY_SCENARIO=ember-canary
+
+matrix:
+  fast_finish: true
+  allow_failures:
+    - env: EMBER_TRY_SCENARIO=ember-canary
 
 before_install:
+  - export PATH=/usr/local/phantomjs-2.0.0/bin:$PATH
   - "npm config set spin false"
   - "npm install -g npm@^2"
 
@@ -27,4 +33,12 @@ install:
   - bower install
 
 script:
-  - ./travis-ci-ember-try.sh
+  - ember try $EMBER_TRY_SCENARIO test
+
+notifications:
+  webhooks:
+    urls:
+      - https://webhooks.gitter.im/e/ded8f776cc4787c57dcc
+    on_success: change
+    on_failure: always
+    on_start: never
