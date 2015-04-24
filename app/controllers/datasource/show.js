@@ -16,7 +16,7 @@
 
 import Ember from 'ember';
 import moment from 'moment';
-import momentAsMs from 'druid-ui/utils/moment-as-ms';
+// import momentAsMs from 'druid-ui/utils/moment-as-ms';
 import momentAsString from 'druid-ui/utils/moment-as-str';
 import DruidClient from 'druid-ui/utils/druid-client';
 
@@ -109,9 +109,9 @@ export default Ember.Controller.extend({
     }
   }),
 
-  topKData: Ember.computed('model.dimensions', 'topKRankingMetric', {
+  topNData: Ember.computed('model.dimensions', 'topNRankingMetric', {
     get() {
-      var metric = this.get('topKRankingMetric');
+      var metric = this.get('topNRankingMetric');
 
       return this.get('model.dimensions').map(dim => {
         var params = extend(this.baseQueryPayload(), {
@@ -145,25 +145,23 @@ export default Ember.Controller.extend({
       });
     }
   }),
-  topKRankingMetric: 'clicks',
+  topNRankingMetric: 'clicks',
   allTimeGranularities: ['minute', 'hour', 'day'],
   timeGranularity: 'minute',
 
   allLayoutModes: ['Top/Bottom','Left/Right'],
   layoutMode: 'Left/Right',
 
-  startDate: computeEndTime().subtract(1, 'h'),
-  endDate: computeEndTime(),
-  sd: momentAsMs('startDate'),
-  ed: momentAsMs('endDate'),
+  sd: computeEndTime().subtract(3, 'd').valueOf(),
+  ed: computeEndTime().valueOf(),
 
-  startDateStr: momentAsString('startDate', 'll'),
-  endDateStr: momentAsString('endDate', 'll'),
+  startDateStr: momentAsString('sd', 'D MMMM YYYY'),
+  endDateStr: momentAsString('ed', 'D MMMM YYYY'),
 
   baseQueryPayload() {
     return extend({
         dataSource: this.get('model.id'),
-        intervals: this.get('startDate').toISOString() + '/' + this.get('endDate').toISOString()
+        intervals: moment(this.get('sd')).toISOString() + '/' + moment(this.get('endDate')).toISOString()
       },
       aggs
     );

@@ -4,7 +4,11 @@ import moment from 'moment';
 export default function momentAsStr(key, fmt) {
 	return Ember.computed(key, {
 		get() {
-			return moment(this.get(key)).format(fmt);
+      var m = moment(Ember.get(this, key));
+      if (!m.isValid()) {
+        throw `Invalid date: ${key} -- ${this.get(key)}`;
+      }
+			return m.format(fmt);
 		},
 		set(k, val) {
 			this.set(key, moment(val).valueOf());
