@@ -23,17 +23,7 @@ export default Ember.Route.extend({
     }
   },
 
-<<<<<<< HEAD:app/routes/datasource/show_old.js
   model: function (params) {
     return this.store.find('datasource-info', params.id);
   }
-=======
-// Replace this with your real tests.
-test('it works', function(assert) {
-  assert.equal(
-  	truncatedString('this is a test', {hash: {width: 10}}).string,
-  	'this is<span data-toggle="tooltip" data-placement="auto" title="this is a test">...</span>',
-  	'String should be truncated accurately'
-  );
->>>>>>> upstream:tests/unit/helpers/truncated-string-test.js
 });

@@ -5,7 +5,7 @@ import {
 
 moduleForComponent('druid-top-n-list', {
   // Specify the other units that are required for this test
-  // needs: ['component:foo', 'helper:bar']
+  needs: ['component:materialize-card', 'component:materialize-card-content']
 });
 
 test('it renders', function(assert) {

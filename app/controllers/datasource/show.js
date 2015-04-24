@@ -15,7 +15,7 @@
  */
 
 import Ember from 'ember';
-import Moment from 'moment';
+import moment from 'moment';
 import momentAsMs from 'druid-ui/utils/moment-as-ms';
 import momentAsString from 'druid-ui/utils/moment-as-str';
 import DruidClient from 'druid-ui/utils/druid-client';
@@ -23,7 +23,7 @@ import DruidClient from 'druid-ui/utils/druid-client';
 var extend = Ember.$.extend;
 
 function computeEndTime() {
-  var startTime = new Moment().startOf('minute');
+  var startTime = moment().startOf('minute');
   var theMinute = startTime.minute();
   if (theMinute < 30) {
     startTime.add(30 - theMinute, 'm');
@@ -86,7 +86,7 @@ export default Ember.Controller.extend({
       }
       var o = {};
       for (var i = 0; i < (data || []).length; i += 1) {
-        var x = Moment(data[i].timestamp).unix();
+        var x = moment(data[i].timestamp).unix();
         for (var j in data[i].result) {
           var y = data[i].result[j];
           if(Ember.isEmpty(o[j])) {

@@ -5,7 +5,7 @@ import {
 
 moduleForComponent('md-selectize', {
   // Specify the other units that are required for this test
-  // needs: ['component:foo', 'helper:bar']
+  needs: ['component:ember-selectize']
 });
 
 test('it renders', function(assert) {
