@@ -1,4 +1,4 @@
-# Druid-ui
+# Druid-ui [![Code Climate](https://codeclimate.com/github/yahoo/druid-dashboard/badges/gpa.svg)](https://codeclimate.com/github/yahoo/druid-dashboard)
 
 This README outlines the details of collaborating on this Ember application.
 
