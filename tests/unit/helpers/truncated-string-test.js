@@ -21,7 +21,10 @@ import {
 module('TruncatedStringHelper');
 
 // Replace this with your real tests.
-test('it works', function() {
-  var result = truncatedString(42);
-  ok(result);
+test('it works', function(assert) {
+  assert.equal(
+  	truncatedString('this is a test', {hash: {width: 10}}).string,
+  	'this is<span data-toggle="tooltip" data-placement="auto" title="this is a test">...</span>',
+  	'String should be truncated accurately'
+  );
 });
