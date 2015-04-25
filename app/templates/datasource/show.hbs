@@ -5,23 +5,20 @@
 </div>
 
 <div class="row">
-
+  <div class="col m3 s12">
+    {{md-select
+      label="TopK Ranking Metric"
+      content=model.metrics
+      value=topNRankingMetric}}
+  </div>
 	<div class="col m3 s12">
 		{{md-input-date label='Start Date' value=startDateStr}}
-
 	</div>
 	<div class="col m3 s12">
 		{{md-input-date label='End Date' value=endDateStr}}
 
 	</div>
-	<div class="col m3 s12">
-		{{md-select
-			label="Layout"
-			content=allLayoutModes
-			value=layoutMode
-			optionValuePath="content"
-			optionLabelPath="content"}}
-	</div>
+
 	<div class="col m3 s12">
 		{{md-select
 			label="Time Granularity"
@@ -30,14 +27,21 @@
 			optionValuePath="content"
 			optionLabelPath="content"}}
 	</div>
-  <div class="col m3 s12">
-    {{md-select
-      label="TopK Ranking Metric"
-      content=model.metrics
-      value=topNRankingMetric
-      optionValuePath="content"
-      optionLabelPath="content"}}
+  <div class="col m6 s12">
+    {{md-selectize
+      label="TopN Dimensions"
+      content=model.dimensions
+      multiple=true
+      selection=topNDimensions}}
   </div>
+  <div class="col m6 s12">
+    {{md-selectize
+      label="Time series metrics"
+      content=model.metrics
+      multiple=true
+      selection=timeSeriesMetrics}}
+  </div>
+
 {{!--
   <div class="col m6 s12">
     {{md-selectize
@@ -57,9 +61,9 @@
 </div>
 
 <div class="row">
-  <div class="col s12 m7">
+  <div class="col s12 m7 topN-lists">
     {{#each topNData as |topNDataItem|}}
-      <div class="col s12 m6">
+      <div class="col s12">
       {{druid-top-n-list
         dimension=topNDataItem.dimension
         rankingMetric=topNRankingMetric
@@ -72,11 +76,18 @@
     {{#each _timeSeriesArrays as |series|}}
       {{#md-card title=(text-titlecase series.metric)}}
         {{#md-card-content}}
-          {{#nf-graph width=268 height=150}}
+          {{#nf-graph width=400 height=150}}
             {{#nf-graph-content}}
-              {{nf-line data=series.points interpolator="linear"}}
+              {{nf-area data=series.points interpolator="basis"}}
             {{/nf-graph-content}}
+            {{#nf-y-axis as |tick|}}
+              <text>{{nice-number tick.value}}</text>
+            {{/nf-y-axis}}
+            {{#nf-x-axis tickCount=4 as |tick|}}
+              <text>{{moment tick.value 'll'}}</text>
+            {{/nf-x-axis}}
           {{/nf-graph}}
+
         {{/md-card-content}}
       {{/md-card}}
     {{/each}}

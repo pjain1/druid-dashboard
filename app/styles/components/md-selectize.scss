@@ -1,29 +1,38 @@
 
 .md-selectize {
-  .selectize-control.multi .selectize-input,
-  .selectize-control.single .selectize-input {
-    background: transparent;
-    &.has-items {
+  .selectize-control.plugin-remove_button [data-value] .remove {
+    border-left: 1px solid color('white', 'lighten-1');
+  }
+  .selectize-control.multi,
+  .selectize-control.single {
+     .items {
+      min-height: 3rem;
+     }
+     .selectize-input {
       background: transparent;
-    }
-    & > input {
-      position: relative;
-      bottom: 8px;
+      &.has-items {
+        background: transparent;
+      }
+      & > input {
+        position: relative;
+        bottom: 8px;
+        height: 12px;
+      }
+
+      top: -5px;
+      border-left: none;
+      border-right: none;
+      border-top: none;
+
+      box-shadow: none;
+      border-bottom: 1px solid $input-border-color;
+      border-radius: 0;
+      &.input-active {
+        border-bottom: 1px solid $input-focus-color;
+        box-shadow: 0 1px 0 0 $input-focus-color;
+      }
     }
 
-    height: 3rem;
-    top: -5px;
-    border-left: none;
-    border-right: none;
-    border-top: none;
-
-    box-shadow: none;
-    border-bottom: 1px solid $input-border-color;
-    border-radius: 0;
-    &.input-active {
-      border-bottom: 1px solid $input-focus-color;
-      box-shadow: 0 1px 0 0 $input-focus-color;
-    }
   }
   .selectize-control.multi .selectize-input [data-value] {
     background: $primary-color;

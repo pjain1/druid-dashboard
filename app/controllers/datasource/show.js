@@ -19,6 +19,7 @@ import moment from 'moment';
 // import momentAsMs from 'druid-ui/utils/moment-as-ms';
 import momentAsString from 'druid-ui/utils/moment-as-str';
 import DruidClient from 'druid-ui/utils/druid-client';
+import computed from 'ember-new-computed';
 
 var extend = Ember.$.extend;
 
@@ -33,16 +34,16 @@ function computeEndTime() {
   return startTime;
 }
 
-var aggs = {
-  aggregations: [
-    DruidClient.aggs.longSum('clicks'),
-    DruidClient.aggs.doubleSum('impressions')
-  ],
-  postAggregations: [
-    // DruidClient.postAggs.div('clicks', ['total_value', 'events']),
-    // DruidClient.postAggs.div('impressions', ['total_value', 'events'])
-  ]
-};
+// var aggs = {
+//   aggregations: [
+//     DruidClient.aggs.longSum('clicks'),
+//     DruidClient.aggs.doubleSum('impressions')
+//   ],
+//   postAggregations: [
+//     // DruidClient.postAggs.div('clicks', ['total_value', 'events']),
+//     // DruidClient.postAggs.div('impressions', ['total_value', 'events'])
+//   ]
+// };
 // var metricDisplayOrder = ['average', 'events', 'total_value'];
 
 
@@ -54,11 +55,18 @@ export default Ember.Controller.extend({
         '2015-04-15T16:30:00.000Z', '2015-04-16T17:30:00.000Z', 'minute');
     }
   },
-  queryParams: ['layoutMode', 'timeGranularity', 'sd', 'ed'],
+  queryParams: ['layoutMode', 'timeGranularity', 'sd', 'ed', 'topNRankingMetric', 'topNDimensions', 'timeSeriesMetrics'],
 
   druidClient: new DruidClient(),
-
-  timeSeriesData: Ember.computed('timeGranularity', {
+  aggregations: computed('timeSeriesMetrics', {
+    get() {
+      return {
+        aggregations: this.get('timeSeriesMetrics').map( m => DruidClient.aggs.longSum(m)),
+        postAggregations: []
+      };
+    }
+  }),
+  timeSeriesData: computed('sd', 'ed', 'aggregations', 'timeGranularity', {
     get() {
 
       var params = extend(this.baseQueryPayload(), {
@@ -78,7 +86,7 @@ export default Ember.Controller.extend({
       });
     }
   }),
-  _timeSeriesArrays: Ember.computed('timeSeriesData', 'timeSeriesData.content.[]', {
+  _timeSeriesArrays: computed('timeSeriesData', 'timeSeriesData.content.[]', {
     get() {
       var data = this.get('timeSeriesData.content');
       if (Ember.isEmpty(data)) {
@@ -86,7 +94,7 @@ export default Ember.Controller.extend({
       }
       var o = {};
       for (var i = 0; i < (data || []).length; i += 1) {
-        var x = moment(data[i].timestamp).unix();
+        var x = moment(data[i].timestamp).valueOf();
         for (var j in data[i].result) {
           var y = data[i].result[j];
           if(Ember.isEmpty(o[j])) {
@@ -109,11 +117,11 @@ export default Ember.Controller.extend({
     }
   }),
 
-  topNData: Ember.computed('model.dimensions', 'topNRankingMetric', {
+  topNData: computed('sd', 'ed', 'topNDimensions.[]', 'topNRankingMetric', {
     get() {
       var metric = this.get('topNRankingMetric');
 
-      return this.get('model.dimensions').map(dim => {
+      return this.get('topNDimensions').map(dim => {
         var params = extend(this.baseQueryPayload(), {
           granularity: 'all',
           dimension: dim,
@@ -146,24 +154,28 @@ export default Ember.Controller.extend({
     }
   }),
   topNRankingMetric: 'clicks',
+  topNDimensions: ['advertiser_category_id', 'target_type_id', 'language_id'],
+  timeSeriesMetrics: ['clicks', 'impressions'],
   allTimeGranularities: ['minute', 'hour', 'day'],
+
   timeGranularity: 'minute',
 
   allLayoutModes: ['Top/Bottom','Left/Right'],
   layoutMode: 'Left/Right',
 
-  sd: computeEndTime().subtract(3, 'd').valueOf(),
+  sd: computeEndTime().subtract(8, 'h').valueOf(),
   ed: computeEndTime().valueOf(),
 
-  startDateStr: momentAsString('sd', 'D MMMM YYYY'),
-  endDateStr: momentAsString('ed', 'D MMMM YYYY'),
+  startDateStr: momentAsString('sd', 'D MMMM, YYYY'),
+  endDateStr: momentAsString('ed', 'D MMMM, YYYY'),
 
   baseQueryPayload() {
+    var intervalStr = moment(this.get('sd')).toISOString() + '/' + moment(this.get('ed')).toISOString();
     return extend({
         dataSource: this.get('model.id'),
-        intervals: moment(this.get('sd')).toISOString() + '/' + moment(this.get('endDate')).toISOString()
+        intervals: intervalStr
       },
-      aggs
+      this.get('aggregations')
     );
   }
 });

@@ -49,3 +49,19 @@ body {
     }
   }
 }
+
+.nf-area > .area {
+  fill: $primary_color;
+}
+.nf-graph > .background {
+  fill: transparent;
+}
+
+.topN-lists {
+  -webkit-column-count: 2; /* Chrome, Safari, Opera */
+  -moz-column-count: 2; /* Firefox */
+  column-count: 2;
+  .col.s12:first-child .druid-top-n-list {
+    margin-top: -10px;
+  }
+}
