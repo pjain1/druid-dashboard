@@ -1,48 +1,51 @@
----
 language: node_js
+
 node_js:
-  - "0.12"
+- '0.12'
 
 sudo: false
 
 cache:
   directories:
-    - node_modules
-
+  - node_modules
 env:
+  matrix:
   - EMBER_TRY_SCENARIO=default
   - EMBER_TRY_SCENARIO=ember-release
   - EMBER_TRY_SCENARIO=ember-beta
   - EMBER_TRY_SCENARIO=ember-canary
+  global:
+  - secure: MNrIJES/y0weIjfEhFV3Qo1IMwBoBuvAIVaNN4QXCVM2IduGQGC/ayNl5qZwGSTjWfo37je/BWQeYc4PbVA/N9PXTNeq/8Edr3AbrYq78Qh4/gTb8R4HqfoZG5/6DUmknwkrMKdVcOXg70ggjx6qiIAFn1EsfOag7skN216e1qw=
+  - secure: FYxi+I8g6pZ5s1hRIRVdy0IJj9igyCpDDKB3AGi8XKQCgFlTUeLPNOay41naLVkn1NdfrR7xDTrOJud3rl4pD+MDTFuBLAHaNEA/kkDeuYzVs17OSLiMzJDApQcunWgyanUbEYnoumyShN+YWJfOx7jR2VmUTFdTvc/Wxgh1XWQ=
 
 matrix:
   fast_finish: true
   allow_failures:
-    - env: EMBER_TRY_SCENARIO=ember-canary
+  - env: EMBER_TRY_SCENARIO=ember-canary
 
 before_install:
-  - export PATH=/usr/local/phantomjs-2.0.0/bin:$PATH
-  - "npm config set spin false"
-  - "npm install -g npm@^2"
+- export PATH=/usr/local/phantomjs-2.0.0/bin:$PATH
+- npm config set spin false
+- npm install -g npm@^2
 
 install:
-  - npm install -g bower
-  - npm install
-  - bower install
+- npm install -g bower
+- npm install
+- bower install
 
 before_script:
-  - ember sauce:connect
+- ember sauce:connect
 
 script:
-  - ember try $EMBER_TRY_SCENARIO test
+- ember try $EMBER_TRY_SCENARIO test
 
 after_script:
-  - ember sauce:disconnect
+- ember sauce:disconnect
 
 notifications:
   webhooks:
     urls:
-      - https://webhooks.gitter.im/e/ded8f776cc4787c57dcc
+    - https://webhooks.gitter.im/e/ded8f776cc4787c57dcc
     on_success: change
     on_failure: always
     on_start: never
