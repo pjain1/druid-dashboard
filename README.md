@@ -1,4 +1,5 @@
 # Druid-ui [![Build Status](https://travis-ci.org/yahoo/druid-dashboard.svg?branch=master)](https://travis-ci.org/yahoo/druid-dashboard) [![Code Climate](https://codeclimate.com/github/yahoo/druid-dashboard/badges/gpa.svg)](https://codeclimate.com/github/yahoo/druid-dashboard) [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/yahoo/druid-dashboard?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
+![Sauce Test Status](https://saucelabs.com/browser-matrix/druid_dashboard.svg)
 
 This README outlines the details of collaborating on this Ember application.
 
