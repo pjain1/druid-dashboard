@@ -6,11 +6,14 @@
     "SL_internet_explorer_10_Windows_7",
     "SL_internet_explorer_11_Windows_8.1",
     "SL_firefox",
-    "SL_safari"
+    "SL_safari",
+    "SL_chrome"
   ],
   "launch_in_dev": [
     "PhantomJS",
-    "Chrome"
+    "Chrome",
+    "Firefox",
+    "Safari"
   ],
   "launchers": {
     "SL_chrome": {
@@ -45,7 +48,7 @@
         "-b",
         "internet explorer",
         "-v",
-        "10",
+        "11",
         "-p",
         "Windows 8.1",
         "--at",
