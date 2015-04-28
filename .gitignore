@@ -18,3 +18,5 @@ testem.log
 
 .idea
 *.iml
+*.sublime-workspace
+run.sh
