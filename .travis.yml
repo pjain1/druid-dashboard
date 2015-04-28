@@ -1,10 +1,7 @@
 language: node_js
-
 node_js:
 - '0.12'
-
 sudo: false
-
 cache:
   directories:
   - node_modules
@@ -15,33 +12,26 @@ env:
   - EMBER_TRY_SCENARIO=ember-beta
   - EMBER_TRY_SCENARIO=ember-canary
   global:
-  - secure: MNrIJES/y0weIjfEhFV3Qo1IMwBoBuvAIVaNN4QXCVM2IduGQGC/ayNl5qZwGSTjWfo37je/BWQeYc4PbVA/N9PXTNeq/8Edr3AbrYq78Qh4/gTb8R4HqfoZG5/6DUmknwkrMKdVcOXg70ggjx6qiIAFn1EsfOag7skN216e1qw=
-  - secure: FYxi+I8g6pZ5s1hRIRVdy0IJj9igyCpDDKB3AGi8XKQCgFlTUeLPNOay41naLVkn1NdfrR7xDTrOJud3rl4pD+MDTFuBLAHaNEA/kkDeuYzVs17OSLiMzJDApQcunWgyanUbEYnoumyShN+YWJfOx7jR2VmUTFdTvc/Wxgh1XWQ=
-
+  - secure: HpSoaFnpyI3XVO2vjYXon17Ntg3aJOxpQqIUAghWms9MoX9vL85xxcGWr6DWYacX6URhT72VgBwa023hI1I/h2/VMXdIwfwdrpr8unS8QKuQzDr9tQNTWW7htJoqPrqL21uNCd8SBBrHMnwQvbwsifccVnLlaf+l+No2+Ezs+jc=
+  - secure: BP5T/ghQJS3n4xkpq2dZEYK+0RdwrCO3o9PX3qW+Kqk/AyhrpJppglwegDisbfhzCFOZpx+Tklxll6aUX55NtUdZT/sveCJu2TEIcIDF3LdWntOfeRVoq1seaALbZA3O5gL6uzcISt16zIdfa7f5DbrQ5n5n9IoXIRIAvQCbIZ0=
 matrix:
   fast_finish: true
   allow_failures:
   - env: EMBER_TRY_SCENARIO=ember-canary
-
 before_install:
 - export PATH=/usr/local/phantomjs-2.0.0/bin:$PATH
 - npm config set spin false
 - npm install -g npm@^2
-
 install:
 - npm install -g bower
 - npm install
 - bower install
-
 before_script:
 - ember sauce:connect
-
 script:
 - ember try $EMBER_TRY_SCENARIO test
-
 after_script:
 - ember sauce:disconnect
-
 notifications:
   webhooks:
     urls:
