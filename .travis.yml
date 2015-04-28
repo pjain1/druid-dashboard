@@ -12,8 +12,8 @@ env:
   - EMBER_TRY_SCENARIO=ember-beta
   - EMBER_TRY_SCENARIO=ember-canary
   global:
-  - secure: HpSoaFnpyI3XVO2vjYXon17Ntg3aJOxpQqIUAghWms9MoX9vL85xxcGWr6DWYacX6URhT72VgBwa023hI1I/h2/VMXdIwfwdrpr8unS8QKuQzDr9tQNTWW7htJoqPrqL21uNCd8SBBrHMnwQvbwsifccVnLlaf+l+No2+Ezs+jc=
-  - secure: BP5T/ghQJS3n4xkpq2dZEYK+0RdwrCO3o9PX3qW+Kqk/AyhrpJppglwegDisbfhzCFOZpx+Tklxll6aUX55NtUdZT/sveCJu2TEIcIDF3LdWntOfeRVoq1seaALbZA3O5gL6uzcISt16zIdfa7f5DbrQ5n5n9IoXIRIAvQCbIZ0=
+  - secure: P1o4MsbYAzelhbGyiwU4qEkFtudvUGKEmiPjNR/R3gQ1cQNIWAvWxCJL6SlkCrrws9ZfqfjhCvnI5BwHZLR0Mv3YbYb3ok9Cfm+SHyyp+ZuVbXg77iEMHtlNyQnUBpL7WLhfQHw+JV5h22q1emcp900oBZvqj78bE1Mgw9ps1rA=
+  - secure: onuWx8WBnh36/cjEqnLVW1Rd8FnplN17lenPYthshyjOH/FmP3QTcTYw6oFzLE6DXFmVja7RkY+WHtwxQYtnUuarBKYwQ5y0DfzVq9p3URz8vXPMeXrWMF+fanMV6KlNkTPTN79oFY3R/WBHwWz6KvwDTqaZG+KOjplnne94JCQ=
 matrix:
   fast_finish: true
   allow_failures:
