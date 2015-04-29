@@ -10,7 +10,8 @@
     "SL_firefox",
     "SL_chrome",
     "SL_safari",
-    "iPhone 8.2"
+    "iPhone 8.2",
+    "Android 5.1"
   ],
   "launch_in_dev": [
     "PhantomJS",
@@ -97,6 +98,23 @@
         "OS X 10.10",
         "-dn",
         "iPhone Simulator",
+        "--at",
+        "--no-ct",
+        "--u"
+      ],
+      "protocol": "browser"
+    },
+    "Android 5.1": {
+      "exe": "./node_modules/.bin/ember-cli-sauce",
+      "args": [
+        "-b",
+        "android",
+        "-v",
+        "5.1",
+        "-p",
+        "Linux",
+        "-dn",
+        "Android Emulator",
         "--at",
         "--no-ct",
         "--u"
