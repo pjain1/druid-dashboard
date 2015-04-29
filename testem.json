@@ -6,7 +6,6 @@
     "SL_internet_explorer_10_Windows_7",
     "SL_internet_explorer_11_Windows_8.1",
     "SL_firefox",
-    "SL_safari",
     "SL_chrome"
   ],
   "launch_in_dev": [
@@ -21,6 +20,8 @@
       "args": [
         "-b",
         "chrome",
+        "-p",
+        "Windows 8.1",
         "--at",
         "--no-ct",
         "--u"
@@ -62,17 +63,6 @@
       "args": [
         "-b",
         "firefox",
-        "--at",
-        "--no-ct",
-        "--u"
-      ],
-      "protocol": "browser"
-    },
-    "SL_safari": {
-      "exe": "./node_modules/.bin/ember-cli-sauce",
-      "args": [
-        "-b",
-        "safari",
         "--at",
         "--no-ct",
         "--u"
