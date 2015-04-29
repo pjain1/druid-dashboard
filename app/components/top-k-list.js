@@ -20,7 +20,7 @@ export default Ember.Component.extend({
 	tagName: 'table',
 	classNames: ['table', 'table-striped', 'top-k-list'],
 	beautifyTooltips: function () {
-		this.$('[data-toggle="tooltip"]').tooltip();
+		// this.$('[data-toggle="tooltip"]').tooltip();
 	},
 	contentChangedObserver: function () {
 		Ember.run.debounce(this, this.beautifyTooltips, 100);
