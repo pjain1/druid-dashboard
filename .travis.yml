@@ -1,21 +1,22 @@
----
 language: node_js
 
 node_js:
- - "0.12.2"
+  - "0.12.2"
 
 sudo: false
 
 cache:
   directories:
-    - node_modules
-
+  - node_modules
 env:
-  - EMBER_TRY_SCENARIO=default
-  - EMBER_TRY_SCENARIO=ember-release
-  - EMBER_TRY_SCENARIO=ember-beta
-  - EMBER_TRY_SCENARIO=ember-canary
-
+  matrix:
+    - EMBER_TRY_SCENARIO=default
+    - EMBER_TRY_SCENARIO=ember-release
+    - EMBER_TRY_SCENARIO=ember-beta
+    - EMBER_TRY_SCENARIO=ember-canary
+  global:
+    - secure: P1o4MsbYAzelhbGyiwU4qEkFtudvUGKEmiPjNR/R3gQ1cQNIWAvWxCJL6SlkCrrws9ZfqfjhCvnI5BwHZLR0Mv3YbYb3ok9Cfm+SHyyp+ZuVbXg77iEMHtlNyQnUBpL7WLhfQHw+JV5h22q1emcp900oBZvqj78bE1Mgw9ps1rA=
+    - secure: onuWx8WBnh36/cjEqnLVW1Rd8FnplN17lenPYthshyjOH/FmP3QTcTYw6oFzLE6DXFmVja7RkY+WHtwxQYtnUuarBKYwQ5y0DfzVq9p3URz8vXPMeXrWMF+fanMV6KlNkTPTN79oFY3R/WBHwWz6KvwDTqaZG+KOjplnne94JCQ=
 matrix:
   fast_finish: true
   allow_failures:
@@ -34,8 +35,14 @@ install:
   - npm install
   - bower install
 
+before_script:
+  - ember sauce:connect
+
 script:
   - ember try $EMBER_TRY_SCENARIO test
+
+after_script:
+  - ember sauce:disconnect
 
 notifications:
   webhooks:
