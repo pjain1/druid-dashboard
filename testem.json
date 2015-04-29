@@ -1,5 +1,6 @@
 {
   "framework": "qunit",
+  "host": "lvh.me",
   "test_page": "tests/index.html?hidepassed",
   "launch_in_ci": [
     "PhantomJS",
@@ -7,7 +8,9 @@
     "SL_internet_explorer_10_Windows_7",
     "SL_internet_explorer_11_Windows_8.1",
     "SL_firefox",
-    "SL_chrome"
+    "SL_chrome",
+    "SL_safari",
+    "iPhone 8.2"
   ],
   "launch_in_dev": [
     "PhantomJS",
@@ -15,6 +18,7 @@
     "Firefox",
     "Safari"
   ],
+  "parallel": 4,
   "launchers": {
     "SL_chrome": {
       "exe": "./node_modules/.bin/ember-cli-sauce",
@@ -29,16 +33,13 @@
       ],
       "protocol": "browser"
     },
-    "SL_internet_explorer_9_Windows_7": {
+    "SL_safari": {
       "exe": "./node_modules/.bin/ember-cli-sauce",
       "args": [
         "-b",
-        "internet explorer",
+        "safari",
         "-v",
-        "9",
-        "-p",
-        "Windows 7",
-        "--at",
+        "8",
         "--no-ct",
         "--u"
       ],
@@ -79,6 +80,23 @@
       "args": [
         "-b",
         "firefox",
+        "--at",
+        "--no-ct",
+        "--u"
+      ],
+      "protocol": "browser"
+    },
+    "iPhone 8.2": {
+      "exe": "./node_modules/.bin/ember-cli-sauce",
+      "args": [
+        "-b",
+        "iphone",
+        "-v",
+        "8.2",
+        "-p",
+        "OS X 10.10",
+        "-dn",
+        "iPhone Simulator",
         "--at",
         "--no-ct",
         "--u"
