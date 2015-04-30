@@ -72,13 +72,12 @@
     {{/each}}
   </div>
   <div class="col s12 m5">
-    {{#if _timeSeriesArrays.length}}
-    {{#each _timeSeriesArrays as |series|}}
-      {{#md-card title=(text-titlecase series.metric)}}
+    {{#each _timeSeriesArrays itemController="tracking" as |series|}}
+      {{#md-card title=(text-titlecase series.model.metric)}}
         {{#md-card-content}}
           {{#nf-graph width=400 height=150}}
             {{#nf-graph-content}}
-              {{nf-area data=series.points interpolator="basis"}}
+              {{nf-area data=series.model.points interpolator="basis" trackingMode="hover" trackedData=series.tracker}}
             {{/nf-graph-content}}
             {{#nf-y-axis as |tick|}}
               <text>{{nice-number tick.value}}</text>
@@ -88,16 +87,17 @@
             {{/nf-x-axis}}
           {{/nf-graph}}
 
+          {{#if series.tracker}}
+            {{moment series.tracker.x 'll'}}: {{nice-number series.tracker.y}}
+          {{/if}}
         {{/md-card-content}}
       {{/md-card}}
-    {{/each}}
     {{else}}
       {{#md-card title='No Timeseries Results'}}
         {{#md-card-content}}
           The druid broker node returned no timeseries data.
         {{/md-card-content}}
       {{/md-card}}
-    {{/if}}
-
+    {{/each}}
   </div>
 </div>
