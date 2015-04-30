@@ -7,8 +7,8 @@
   </thead>
   <tbody>
   {{#each content as |row|}}
-    <tr>
-      <td>
+    <tr {{action 'itemClicked' row}}>
+        <td>
       {{#if row.label}}
         {{row.label}}
       {{else}}

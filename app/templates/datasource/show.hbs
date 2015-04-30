@@ -37,26 +37,10 @@
   <div class="col m6 s12">
     {{md-selectize
       label="Time series metrics"
-      content=model.metrics
+      content=allowedMetrics
       multiple=true
       selection=timeSeriesMetrics}}
   </div>
-
-{{!--
-  <div class="col m6 s12">
-    {{md-selectize
-      label="TopN Dimensions"
-      multiple=true
-      content=model.dimensions
-      selected=topKDimensions}}
-  </div>
-  <div class="col m6 s12">
-    {{md-selectize
-      label="Time Series Metrics"
-      multiple=true
-      content=model.metrics
-      selected=timeSeriesMetrics}}
-  </div> --}}
 
 </div>
 
@@ -65,6 +49,7 @@
     {{#each topNData as |topNDataItem|}}
       <div class="col s12">
       {{druid-top-n-list
+        lineFilter=topNFilterAdded
         dimension=topNDataItem.dimension
         rankingMetric=topNRankingMetric
         content=topNDataItem.data}}

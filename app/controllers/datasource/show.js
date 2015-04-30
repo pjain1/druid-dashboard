@@ -34,17 +34,16 @@ function computeEndTime() {
   return startTime;
 }
 
-// var aggs = {
-//   aggregations: [
-//     DruidClient.aggs.longSum('clicks'),
-//     DruidClient.aggs.doubleSum('impressions')
-//   ],
-//   postAggregations: [
-//     // DruidClient.postAggs.div('clicks', ['total_value', 'events']),
-//     // DruidClient.postAggs.div('impressions', ['total_value', 'events'])
-//   ]
-// };
-// var metricDisplayOrder = ['average', 'events', 'total_value'];
+ var aggs = {
+   aggregations: [
+     DruidClient.aggs.longSum('total_value'),
+     DruidClient.aggs.longSum('events')
+   ],
+   postAggregations: [
+      DruidClient.postAggs.div('average', ['total_value', 'events'])
+   ]
+ };
+ //var metricDisplayOrder = ['average', 'events', 'total_value'];
 
 
 export default Ember.Controller.extend({
@@ -53,20 +52,33 @@ export default Ember.Controller.extend({
     tryQuery() {
       this.get('druidClient').timeSeriesQuery('wikipedia',
         '2015-04-15T16:30:00.000Z', '2015-04-16T17:30:00.000Z', 'minute');
-    }
+    },
+topNFilterAdded(item) {
+  var filters = this.get('filters');
+  if (filters[item.dim]) {
+    filters[item.dim].push(item.label);
+  } else {
+    filters[item.dim] = [item.label];
+  }
+  this.set('filters', filters);
+  this.notifyPropertyChange('filters');
+}
   },
   queryParams: ['layoutMode', 'timeGranularity', 'sd', 'ed', 'topNRankingMetric', 'topNDimensions', 'timeSeriesMetrics'],
 
   druidClient: new DruidClient(),
   aggregations: computed('timeSeriesMetrics', {
     get() {
-      return {
+      return aggs;
+/*
+      {
         aggregations: this.get('timeSeriesMetrics').map( m => DruidClient.aggs.longSum(m)),
         postAggregations: []
       };
+*/
     }
   }),
-  timeSeriesData: computed('sd', 'ed', 'aggregations', 'timeGranularity', {
+  timeSeriesData: computed('sd', 'ed', 'filters', 'aggregations', 'timeGranularity', {
     get() {
 
       var params = extend(this.baseQueryPayload(), {
@@ -77,6 +89,7 @@ export default Ember.Controller.extend({
           this._super(...arguments);
           var client = this.get('client');
 
+        debugger;
           client.timeseries(params).then(
             data => this.set('content', data)
           );
@@ -117,7 +130,7 @@ export default Ember.Controller.extend({
     }
   }),
 
-  topNData: computed('sd', 'ed', 'topNDimensions.[]', 'topNRankingMetric', {
+  topNData: computed('sd', 'ed', 'filters', 'topNDimensions.[]', 'topNRankingMetric', {
     get() {
       var metric = this.get('topNRankingMetric');
 
@@ -153,10 +166,17 @@ export default Ember.Controller.extend({
       });
     }
   }),
-  topNRankingMetric: 'clicks',
-  topNDimensions: ['advertiser_category_id', 'target_type_id', 'language_id'],
-  timeSeriesMetrics: ['clicks', 'impressions'],
+  topNRankingMetric: 'events',
+  topNDimensions: ['host', 'service', 'metric'],
+  timeSeriesMetrics: ['average', 'events', 'total_value'],
+  allowedMetrics: computed({
+  get() {
+    var aggs = this.get('aggregations');
+    return aggs.aggregations.map(agg => agg.name).concat(aggs.postAggregations.map(agg => agg.name));
+  }
+}),
   allTimeGranularities: ['minute', 'hour', 'day'],
+  filters: {},
 
   timeGranularity: 'minute',
 
@@ -173,7 +193,8 @@ export default Ember.Controller.extend({
     var intervalStr = moment(this.get('sd')).toISOString() + '/' + moment(this.get('ed')).toISOString();
     return extend({
         dataSource: this.get('model.id'),
-        intervals: intervalStr
+        intervals: intervalStr,
+        filter: this.get('filters')
       },
       this.get('aggregations')
     );
