@@ -54,14 +54,25 @@ export default Ember.Controller.extend({
         '2015-04-15T16:30:00.000Z', '2015-04-16T17:30:00.000Z', 'minute');
     },
 topNFilterAdded(item) {
-  var filters = this.get('filters');
+  var filters = Ember.$.extend({}, this.get('filters'));
   if (filters[item.dim]) {
     filters[item.dim].push(item.label);
   } else {
     filters[item.dim] = [item.label];
   }
   this.set('filters', filters);
-  this.notifyPropertyChange('filters');
+},
+removeFilter(filter) {
+  var filters = Ember.$.extend({}, this.get('filters'));
+  var theList = filters[filter.dimension];
+  debugger;
+  if (theList) {
+    filters[filter.dimension] = theList.filter(val => val !== filter.value );
+    if (filters[filter.dimension].length === 0) {
+      delete filters[filter.dimension];
+    }
+    this.set('filters', filters);
+  }
 }
   },
   queryParams: ['layoutMode', 'timeGranularity', 'sd', 'ed', 'topNRankingMetric', 'topNDimensions', 'timeSeriesMetrics'],
@@ -89,7 +100,6 @@ topNFilterAdded(item) {
           this._super(...arguments);
           var client = this.get('client');
 
-        debugger;
           client.timeseries(params).then(
             data => this.set('content', data)
           );
@@ -177,6 +187,19 @@ topNFilterAdded(item) {
 }),
   allTimeGranularities: ['minute', 'hour', 'day'],
   filters: {},
+  filterArray: computed('filters', {
+    get() {
+      var arr = [];
+      var filters = this.get('filters');
+      Ember.keys(filters).forEach(dim => {
+        for (var index = 0; index < filters[dim].length; ++index) {
+          arr.push({ dimension: dim, value: filters[dim][index] });
+        }
+      });
+console.log(arr);
+      return arr;
+    }
+  }),
 
   timeGranularity: 'minute',
 

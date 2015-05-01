@@ -45,6 +45,17 @@
 </div>
 
 <div class="row">
+    <div class="col s12">
+        {{#each filterArray as |filter|}}
+          <div class="filterRow">
+              <span class="remove-button" {{action "removeFilter" filter}}>X</span>
+            {{filter.dimension}}{{filter.value}}
+          </div>
+        {{/each}}
+    </div>
+</div>
+
+<div class="row">
   <div class="col s12 m7 topN-lists">
     {{#each topNData as |topNDataItem|}}
       <div class="col s12">
