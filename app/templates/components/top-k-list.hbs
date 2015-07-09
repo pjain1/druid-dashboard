@@ -2,6 +2,7 @@
 	<tr>
 		<th colspan="2">{{content.title}}</th>
 	</tr>
+	{{ dimension-selector searchDimension=searchDimension action="rowClicked" dimension=content.title }}
 </thead>
 <tbody>
 	{{#each content.data as |dat|}}

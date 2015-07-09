@@ -21,7 +21,7 @@ import {
 
 moduleForComponent('top-k-list', 'TopKListComponent', {
   // specify the other units that are required for this test
-  // needs: ['component:foo', 'helper:bar']
+  needs: ['component:dimension-selector']
 });
 
 test('it renders', function() {
