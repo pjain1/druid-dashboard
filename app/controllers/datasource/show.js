@@ -49,14 +49,14 @@ var druidClient = {
 
 var aggs = {
   aggregations: [
-    druidClient.aggs.longSum('events'),
-    druidClient.aggs.doubleSum('total_value')
+    druidClient.aggs.longSum('numberOfGames'),
+    druidClient.aggs.longSum('runs')
   ],
   postAggregations: [
-    druidClient.postAggs.div('average', ['total_value', 'events'])
+    druidClient.postAggs.div('average', ['runs', 'numberOfGames'])
   ]
 };
-var metricDisplayOrder = ['average', 'events', 'total_value'];
+var metricDisplayOrder = ['average', 'runs', 'numberOfGames'];
 
 function buildFilter(dim, vals) {
   function makeSelector(val) {
@@ -74,15 +74,14 @@ function buildFilter(dim, vals) {
 }
 
 function doQuery() {
+  //alert(arguments);
   var query = Ember.$.extend.apply(null, [{}].concat(Array.prototype.slice.call(arguments, 0)));
-
   if (query.filter != null) {
     var filters = Object.keys(query.filter)
       .filter(function(key){ return query.filter[key] != null; })
       .map(function(toFilter) {
                                return buildFilter(toFilter, query.filter[toFilter]);
                              });
-
     switch (filters.length) {
       case 0:
         query.filter = null;
@@ -251,6 +250,8 @@ Ember.Controller.extend(
 
     actions: {
       topKRowClicked: function (info) {
+        console.log('dimension: '+ info.dimension);
+        console.log('value: '+ info.value);
         var filtersForThisDimensionKey = 'dimensionFilters.%@'.fmt(info.dimension);
         var currArr = this.get(filtersForThisDimensionKey);
         if (currArr == null) {
@@ -296,7 +297,9 @@ Ember.Controller.extend(
     }.property('startDate', 'endDate'),
 
     timeseriesData: function(){
+      console.log('Performing TS query');
       if (Ember.isEmpty(this.get('model.id'))) {
+        console.log('WHAT!! model id is empty');
         return null;
       }
       var retVal = TimeseriesObject.create(
@@ -315,9 +318,15 @@ Ember.Controller.extend(
 
     topKData: function ()
     {
+      console.log('Performing TopN query');
       if (Ember.isEmpty(this.get('model.id'))) {
+        console.log('WHAT!! model id is empty');
         return null;
       }
+      console.log('Performing TOP N for dimensions '+ this.get('model.dimensions.content'));
+      console.log('with metric: '+ this.get('metric'));
+      console.log('with interval: '+ this.get('interval'));
+      console.log('with filters: ' + JSON.stringify(this.get('dimensionFilters')));
       return this.get('model.dimensions.content').map(
         function (dim)
         {

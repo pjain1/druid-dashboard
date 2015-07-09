@@ -2,6 +2,9 @@
 	<tr>
 		<th colspan="2">{{content.title}}</th>
 	</tr>
+	<tr>
+		<td>{{input action="rowClicked" valueBinding=search placeholder="Search"}}</td>
+	</tr>
 </thead>
 <tbody>
 	{{#each content.data as |dat|}}
