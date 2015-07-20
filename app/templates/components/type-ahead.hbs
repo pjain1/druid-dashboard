@@ -1,0 +1,14 @@
+<tr>
+<td>{{input action='rowClicked2' value=searchQuery placeholder="Search"}}</td>
+</tr>
+<tr>
+<td>
+{{#if isActive}}
+<ul>
+	{{#each typeAheadResults.content as |item|}}
+		<li {{action 'rowClicked2' item}}>{{item}}</li>
+	{{/each}}
+</ul>
+{{/if}}
+</td>
+</tr>

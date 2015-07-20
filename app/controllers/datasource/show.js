@@ -49,14 +49,14 @@ var druidClient = {
 
 var aggs = {
   aggregations: [
-    druidClient.aggs.longSum('numberOfGames'),
-    druidClient.aggs.longSum('runs')
+    druidClient.aggs.longSum('added'),
+    druidClient.aggs.longSum('count')
   ],
   postAggregations: [
-    druidClient.postAggs.div('average', ['runs', 'numberOfGames'])
+    druidClient.postAggs.div('average', ['added', 'count'])
   ]
 };
-var metricDisplayOrder = ['average', 'runs', 'numberOfGames'];
+var metricDisplayOrder = ['average', 'added', 'count'];
 
 function buildFilter(dim, vals) {
   function makeSelector(val) {
@@ -190,6 +190,46 @@ var TimeseriesObject = Ember.ObjectProxy.extend(
       );
     }
   }
+);  
+
+var TypeAheadObject = Ember.ObjectProxy.extend(
+  {
+    getData: function () {
+      var self = this;
+      doQuery(
+        {
+          queryType: 'search',
+          dataSource: this.datasource
+        },
+        this.query
+      ).then(
+        function (val)
+        {
+          var retVal = { data:[] };
+          if (val.length > 0) {
+            retVal.data = val.map(
+              function (res) {
+                return res.result.map(
+                  function (result) {
+                    console.log('result '+result.value);
+                    return result.value;
+                  }
+                );
+                return res.result.value;
+              }
+            );
+          }
+          return retVal;
+        }
+      ).then(
+        function (finalResult)
+        {
+          console.log(finalResult.data);
+          self.set('content', finalResult.data[0]);
+        }
+      );
+    }
+  }
 );
 
 function momentAsMs(prop) {
@@ -247,6 +287,10 @@ Ember.Controller.extend(
     dimensionFilters: {},
     filters: [],
     runCount: 0,
+    searchQueryChanged: 0,
+    currentSearchDimension: '',
+    currentSearchDimensionValue: '',
+    //isTypeAheadEnabled: new Array(dimension.length).map( function (i) { return false }),
 
     actions: {
       topKRowClicked: function (info) {
@@ -285,7 +329,19 @@ Ember.Controller.extend(
 
         Ember.run.debounce(this, this.refreshDataAfterFilterChange, 700/*ms*/);
 
+      },
+
+      doSearch: function(dimSearch) {
+        console.log('------Searching dim '+dimSearch.dimName+' containing value: '+dimSearch.dimValue);
+        this.set('currentSearchDimension', dimSearch.dimName);
+        this.set('currentSearchDimensionValue', dimSearch.dimValue);
+        Ember.run.debounce(this, this.refreshTypeAheadResults, 1000/*ms*/);
       }
+
+    },
+
+    refreshTypeAheadResults: function () {
+      this.incrementProperty('searchQueryChanged');
     },
 
     refreshDataAfterFilterChange: function () {
@@ -312,7 +368,9 @@ Ember.Controller.extend(
           }
         }
       );
-      retVal.getData();
+      console.log("Time series "+retVal.getData());
+      console.log("TImeseries"+retVal);
+      //retVal.getData();
       return retVal;
     }.property('timeGranularity', 'interval', 'runCount'),
 
@@ -346,6 +404,37 @@ Ember.Controller.extend(
         }.bind(this)
       );
 
-    }.property('model.dimensions.[]', 'runCount', 'interval', 'metric')
+    }.property('model.dimensions.[]', 'runCount', 'interval', 'metric'),
+
+    typeAheadList: function () 
+    {
+      var content = ['a123', 'abc', 'def'];
+      var searchValue = this.get('currentSearchDimensionValue');
+      var searchDimension = this.get('currentSearchDimension');
+      console.log('----------Search query '+searchDimension+' '+searchValue);
+      console.log('------Search results '+content);
+      
+      //this.set('searchResults', content);
+      var retVal = TypeAheadObject.create(
+        {
+          datasource: this.get('model.id'),
+          query: {
+            granularity: 'all',
+            intervals: this.get('interval'),
+            filter: this.get('dimensionFilters'),
+            searchDimensions: [ searchDimension ],
+            query: {
+              type: "insensitive_contains",
+              value: searchValue
+            }
+          }
+        }
+      );
+      retVal.getData();
+      //content = retVal.get('content');
+      //console.log('-------Setting search results to '+content);
+      return retVal;
+    }.property('searchQueryChanged')
+
   }
 );
