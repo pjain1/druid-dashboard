@@ -19,8 +19,6 @@ import Ember from 'ember';
 export default Ember.Component.extend({
 	tagName: 'table',
 	classNames: ['table', 'table-striped', 'top-k-list'],
-	//searchQuery: null,
-
 	beautifyTooltips: function () {
 		// this.$('[data-toggle="tooltip"]').tooltip();
 	},
