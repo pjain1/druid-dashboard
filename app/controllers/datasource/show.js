@@ -215,7 +215,6 @@ var TypeAheadObject = Ember.ObjectProxy.extend(
                     return result.value;
                   }
                 );
-                return res.result.value;
               }
             );
           }
@@ -290,12 +289,9 @@ Ember.Controller.extend(
     searchQueryChanged: 0,
     currentSearchDimension: '',
     currentSearchDimensionValue: '',
-    //isTypeAheadEnabled: new Array(dimension.length).map( function (i) { return false }),
 
     actions: {
       topKRowClicked: function (info) {
-        console.log('dimension: '+ info.dimension);
-        console.log('value: '+ info.value);
         var filtersForThisDimensionKey = 'dimensionFilters.%@'.fmt(info.dimension);
         var currArr = this.get(filtersForThisDimensionKey);
         if (currArr == null) {
@@ -332,7 +328,6 @@ Ember.Controller.extend(
       },
 
       doSearch: function(dimSearch) {
-        console.log('------Searching dim '+dimSearch.dimName+' containing value: '+dimSearch.dimValue);
         this.set('currentSearchDimension', dimSearch.dimName);
         this.set('currentSearchDimensionValue', dimSearch.dimValue);
         Ember.run.debounce(this, this.refreshTypeAheadResults, 1000/*ms*/);
@@ -353,9 +348,7 @@ Ember.Controller.extend(
     }.property('startDate', 'endDate'),
 
     timeseriesData: function(){
-      console.log('Performing TS query');
       if (Ember.isEmpty(this.get('model.id'))) {
-        console.log('WHAT!! model id is empty');
         return null;
       }
       var retVal = TimeseriesObject.create(
@@ -368,23 +361,14 @@ Ember.Controller.extend(
           }
         }
       );
-      console.log("Time series "+retVal.getData());
-      console.log("TImeseries"+retVal);
-      //retVal.getData();
       return retVal;
     }.property('timeGranularity', 'interval', 'runCount'),
 
     topKData: function ()
     {
-      console.log('Performing TopN query');
       if (Ember.isEmpty(this.get('model.id'))) {
-        console.log('WHAT!! model id is empty');
         return null;
       }
-      console.log('Performing TOP N for dimensions '+ this.get('model.dimensions.content'));
-      console.log('with metric: '+ this.get('metric'));
-      console.log('with interval: '+ this.get('interval'));
-      console.log('with filters: ' + JSON.stringify(this.get('dimensionFilters')));
       return this.get('model.dimensions.content').map(
         function (dim)
         {
@@ -408,13 +392,8 @@ Ember.Controller.extend(
 
     typeAheadList: function () 
     {
-      var content = ['a123', 'abc', 'def'];
       var searchValue = this.get('currentSearchDimensionValue');
       var searchDimension = this.get('currentSearchDimension');
-      console.log('----------Search query '+searchDimension+' '+searchValue);
-      console.log('------Search results '+content);
-      
-      //this.set('searchResults', content);
       var retVal = TypeAheadObject.create(
         {
           datasource: this.get('model.id'),
@@ -431,8 +410,6 @@ Ember.Controller.extend(
         }
       );
       retVal.getData();
-      //content = retVal.get('content');
-      //console.log('-------Setting search results to '+content);
       return retVal;
     }.property('searchQueryChanged')
 

@@ -21,52 +21,17 @@ export default Ember.Component.extend({
 	searchResults: [],
 	isActive: false,
 
-	//typeAheadResults: function () {
-	//	var input = this.get('searchQuery');
-	//	console.log('search query is: '+input);
-		//Ember.run.debounce(this, this.fetchSearchResults, input, 500/*ms*/);
-		//return this.get('searchResults');
-	//	return this.fetchSearchResults(input);
-	//}.property('searchQuery'),
-
-	fetchSearchResults: function (arg) {
-		console.log('Setting is Active for '+this.get('dim')+' to true');
+	fetchSearchResults: function () {
 		this.set('isActive', true);
-	  	var content = [];
-     	arg = this.get('searchQuery');
-      	console.log('Search query '+arg);
+     	var arg = this.get('searchQuery');
 		if(arg && arg.length > 2){
-			console.log('action '+this.get('action'));
-			console.log('act '+this.get('act'));
-			this.sendAction('act', { action: 'act', input: { dimName: this.get('dim'), dimValue: arg } });
-			//this.sendAction('autocomp', {dimension: this.get('dim'), value: arg});
-			//console.log('Search results '+content);
-			//var regex = new RegExp(arg, 'i');
-	  		//content = content.filter(function(name) {
-	    	//	return name.match(regex);
-	  		//});
+			this.sendAction('typeAheadAction', { action: 'typeAheadAction', input: { dimName: this.get('dim'), dimValue: arg } });
 		}
-		//console.log('Setting search results to '+content);
-		//this.get('searchResults', content);
-		//return content;
     }.observes('searchQuery'),
-
-    applySelectedFilter: function () {
-     	console.log('Selected value is '+this.get('selectedValue'));
-		console.log('Action is '+this.get('update'));     	
-    	//this.send('rowClicked2', this.get('selectedValue'))
-    }.observes('selectedValue'),
 
 	actions: {
 		rowClicked2: function (arg) {
 			this.set('isActive', false);
-			console.log("searching for ......"+arg);
-			console.log("dims is "+this.get('dim'));
-			console.log('Sending action: '+this.get('action')+' to the controller');
-			//typeAheadResults.call(this, arg);
-			// this will call rowClicked action on top-k-list component
-			// because 'rowClicked' was passed as action value in top-k-list.hbs 
-			// while using this template
 			this.sendAction('action', arg);
 		}
 	}

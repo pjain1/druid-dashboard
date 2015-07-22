@@ -21,11 +21,6 @@ export default Ember.Component.extend({
 	classNames: ['table', 'table-striped', 'top-k-list'],
 	//searchQuery: null,
 
-	//typeAhead: function () {
-	//	var content = ["test1", "test2", "test3"];
-	//	return content;
-	//},
-
 	beautifyTooltips: function () {
 		// this.$('[data-toggle="tooltip"]').tooltip();
 	},
@@ -35,12 +30,10 @@ export default Ember.Component.extend({
 
 	actions: {
 		rowClicked: function (arg) {
-			console.log('Sending action: '+this.get('action')+' to the controller');
 			this.sendAction('action', {dimension: this.get('content.query.dimension'), value: arg});
 		},
 
 		doSearch: function (arg) {
-			console.log('Sending action in topklist: '+arg.action+' to the controller with arg '+arg.input.dimName+' '+arg.input.dimValue);
 			this.sendAction(arg.action, arg.input);
 		}
 	}

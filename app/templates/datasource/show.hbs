@@ -77,7 +77,7 @@
     <div {{bind-attr class="isColumnLayout:col-sm-7:col-sm-12"}}>
       {{#each topKData as |tkd|}}
           <div {{bind-attr class="isColumnLayout:col-sm-6:col-sm-3"}}>
-            {{top-k-list content=tkd searchList=typeAheadList action="topKRowClicked" act="doSearch" }}
+            {{top-k-list content=tkd searchList=typeAheadList action="topKRowClicked" typeAheadAction="doSearch" }}
           </div>
       {{/each}}
     </div>
