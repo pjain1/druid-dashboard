@@ -14,23 +14,25 @@
  * limitations under the License.
  */
 
+@import 'dim-selector';
+
 .ember-date-time-picker {
-	margin-bottom: 10px;
-	.input-group-addon {
-		width: 20px;
-	}
+    margin-bottom: 10px;
+    .input-group-addon {
+        width: 20px;
+    }
 }
 
 .top-k-list {
-	.tooltip-inner {
-		max-width: 300px;
-		word-wrap: break-word;
-	}
+    .tooltip-inner {
+        max-width: 300px;
+        word-wrap: break-word;
+    }
 
-	.value-cell {
-		color: #bbb;
-		.suffix {
-			color: #999;
-		}
-	}
+    .value-cell {
+        color: #bbb;
+        .suffix {
+            color: #999;
+        }
+    }
 }
