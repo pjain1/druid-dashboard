@@ -75,14 +75,12 @@ function buildFilter(dim, vals) {
 
 function doQuery() {
   var query = Ember.$.extend.apply(null, [{}].concat(Array.prototype.slice.call(arguments, 0)));
-
   if (query.filter != null) {
     var filters = Object.keys(query.filter)
       .filter(function(key){ return query.filter[key] != null; })
       .map(function(toFilter) {
                                return buildFilter(toFilter, query.filter[toFilter]);
                              });
-
     switch (filters.length) {
       case 0:
         query.filter = null;
@@ -152,7 +150,6 @@ var TimeseriesObject = Ember.ObjectProxy.extend(
     getData: function ()
     {
       var self = this;
-
       doQuery(
         {
           queryType: 'timeseries',
@@ -187,6 +184,44 @@ var TimeseriesObject = Ember.ObjectProxy.extend(
         function (val)
         {
           self.set('content', val);
+        }
+      );
+    }
+  }
+);  
+
+var TypeAheadObject = Ember.ObjectProxy.extend(
+  {
+    populateTypeAheadList: function (arg) {
+      var defferedArg = arg;
+      doQuery(
+        {
+          queryType: 'search',
+          dataSource: this.datasource
+        },
+        this.query
+      ).then(
+        function (val)
+        {
+          var retVal = { data:[] };
+          if (val.length > 0) {
+            retVal.data = val.map(
+              function (res) {
+                return res.result.map(
+                  function (result) {
+                    var selectItem = { "id": result.value, "text": result.value };
+                    return selectItem;
+                  }
+                );
+              }
+            );
+          }
+          return retVal;
+        }
+      ).then(
+        function (finalResult)
+        {
+          defferedArg.resolve(finalResult.data[0]);
         }
       );
     }
@@ -284,7 +319,12 @@ Ember.Controller.extend(
 
         Ember.run.debounce(this, this.refreshDataAfterFilterChange, 700/*ms*/);
 
+      },
+
+      searchDimension: function(dimSearchArgs) {
+        Ember.run.debounce(this, this.typeAheadList, dimSearchArgs, 200/*ms*/);
       }
+
     },
 
     refreshDataAfterFilterChange: function () {
@@ -295,7 +335,7 @@ Ember.Controller.extend(
         return this.get('endDate').valueOf() - this.get('startDate').valueOf();
     }.property('startDate', 'endDate'),
 
-    timeseriesData: function(){
+    timeseriesData: function() {
       if (Ember.isEmpty(this.get('model.id'))) {
         return null;
       }
@@ -313,8 +353,7 @@ Ember.Controller.extend(
       return retVal;
     }.property('timeGranularity', 'interval', 'runCount'),
 
-    topKData: function ()
-    {
+    topKData: function () {
       if (Ember.isEmpty(this.get('model.id'))) {
         return null;
       }
@@ -337,6 +376,27 @@ Ember.Controller.extend(
         }.bind(this)
       );
 
-    }.property('model.dimensions.[]', 'runCount', 'interval', 'metric')
+    }.property('model.dimensions.[]', 'runCount', 'interval', 'metric'),
+
+    typeAheadList: function (arg) {
+      var searchDimension = arg.dimName;
+      var searchValue = arg.dimValue;
+      var deffered = arg.deffered;
+      var typeAheadObj = TypeAheadObject.create({
+        datasource: this.get('model.id'),
+        query: {
+          granularity: 'all',
+          intervals: this.get('interval'),
+          filter: this.get('dimensionFilters'),
+          searchDimensions: [ searchDimension ],
+          limit: 50,
+          query: {
+            type: "insensitive_contains",
+            value: searchValue
+          }
+        }
+      });
+      typeAheadObj.populateTypeAheadList(deffered);
+    }
   }
 );
