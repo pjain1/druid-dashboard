@@ -1,0 +1,74 @@
+/*
+ * Copyright (c) 2015 Yahoo Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+.table > thead > tr > th.dim-selector-header {
+    padding: 0px;
+
+    .select2-dropdown-open .select2-choice {
+        background-color: inherit;
+        .select2-choice {
+            border: solid 1px;
+        }
+    }
+
+    .select2-container {
+        border: none;
+        box-shadow: none;
+        -webkit-box-shadow: none;
+        padding: 0;
+        height: inherit;
+
+        .select2-choice {
+            position: absolute;
+            top: -32px;
+            right: 5px;
+
+            border: none;
+            background-image: none;
+            background-color: transparent;
+
+            text-align: right;
+            box-shadow:none;
+            -webkit-box-shadow:none;
+
+            .select2-arrow {
+                display: none;
+            }
+        }
+
+        .select2-choice:after{
+            content: "\e138";
+            font-family: 'Glyphicons Halflings';
+        }
+
+        .select2-chosen {
+            display:none;
+        }
+    }
+}
+
+.select2-drop,
+.select2-drop.select2-drop-above,
+.select2-drop.select2-drop-above.select2-drop-active {
+    border-radius: 4px;
+    padding-top: 5px;
+    border: solid 1px #aaa;
+}
+
+.select2-results .select2-highlighted {
+    background: #aaa;
+    color: #ffffff;
+}

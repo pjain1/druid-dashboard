@@ -68,17 +68,12 @@
     </div>
 </div>
 <div class="row">
-    <div {{bind-attr class="isColumnLayout:col-sm-5:col-sm-12 isColumnLayout:pull-right"}}>
-
-      {{line-graph-stack
-      series=timeseriesData.content.data
-      dashLayout=dashLayout}}
+    <div {{bind-attr class="isColumnLayout:col-sm-6:col-sm-12 isColumnLayout:pull-right"}}>
+        {{line-graph-stack series=timeseriesData.content.data dashLayout=dashLayout }}
     </div>
-    <div {{bind-attr class="isColumnLayout:col-sm-7:col-sm-12"}}>
-      {{#each topKData as |tkd|}}
-          <div {{bind-attr class="isColumnLayout:col-sm-6:col-sm-3"}}>
-            {{top-k-list content=tkd action="topKRowClicked"}}
-          </div>
-      {{/each}}
-    </div>
+    {{#each topKData as |tkd|}}
+        <div {{bind-attr class="isColumnLayout:col-sm-6:col-sm-4"}}>
+            {{top-k-list content=tkd action="topKRowClicked" searchDimension="searchDimension" }}
+        </div>
+    {{/each}}
 </div>
