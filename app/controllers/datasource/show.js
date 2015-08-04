@@ -104,129 +104,92 @@ function doQuery() {
   );
 }
 
-var TopKObject = Ember.ObjectProxy.extend(
+var TopKObject = Ember.ObjectProxy.extend({
+  getData: function ()
   {
-    getData: function ()
-    {
-      var self = this;
-      var dim = this.query.dimension;
-      var metric = this.query.metric;
+    var self = this;
+    var dim = this.query.dimension;
+    var metric = this.query.metric;
 
-      doQuery(
-        {
-          queryType: 'topN',
-          granularity: 'all',
-          dataSource: this.datasource,
-          threshold: 10
-        },
-        aggs,
-        this.query
-      ).then(
-        function (val)
-        {
-          var retVal = {title: dim, data: []};
-          if (val.length > 0) {
-            retVal.data = val[0].result.map(
-              function (res)
-              {
-                return { label: res[dim], amount: res[metric] };
-              }
-            );
-          }
-          return retVal;
-        }
-      ).then(
-        function (val)
-        {
-          self.set('content', val);
-        }
-      );
-    }
+    doQuery(
+      {
+        queryType: 'topN',
+        granularity: 'all',
+        dataSource: this.datasource,
+        threshold: 10
+      },
+      aggs,
+      this.query
+    ).then( val => {
+      var retVal = {title: dim, data: []};
+      if (val.length > 0) {
+        retVal.data = val[0].result.map(
+          res => ({ label: res[dim], amount: res[metric] })
+        );
+      }
+      return retVal;
+    }).then( val => {
+      self.set('content', val);
+    });
   }
-);
+});
 
-var TimeseriesObject = Ember.ObjectProxy.extend(
+var TimeseriesObject = Ember.ObjectProxy.extend({
+  getData: function ()
   {
-    getData: function ()
-    {
-      var self = this;
-      doQuery(
-        {
-          queryType: 'timeseries',
-          dataSource: this.datasource
-        },
-        aggs,
-        this.query
-      ).then(
-        function (val)
-        {
-          var retVal = { data:[] };
-          if (val.length > 0) {
-            retVal.data = metricDisplayOrder.map(function(metric){
-              return {
-                label: metric,
-                dimensions: ['time', metric],
-                data: val.map(
-                  function(res) {
-                    var v = {
-                      time: res.timestamp
-                    };
-                    v[metric] = res.result[metric];
-                    return v;
-                  }
-                )
+    var self = this;
+    doQuery(
+      {
+        queryType: 'timeseries',
+        dataSource: this.datasource
+      },
+      aggs,
+      this.query
+    ).then( val => {
+      var retVal = { data:[] };
+      if (val.length > 0) {
+        retVal.data = metricDisplayOrder.map( metric => {
+          return {
+            label: metric,
+            dimensions: ['time', metric],
+            data: val.map( res => {
+              var v = {
+                time: res.timestamp
               };
-            });
-          }
-          return retVal;
-        }
-      ).then(
-        function (val)
-        {
-          self.set('content', val);
-        }
-      );
-    }
+              v[metric] = res.result[metric];
+              return v;
+            })
+          };
+        });
+      }
+      return retVal;
+    }).then( val => {
+      self.set('content', val);
+    });
   }
-);  
+});  
 
-var TypeAheadObject = Ember.ObjectProxy.extend(
-  {
-    populateTypeAheadList: function (arg) {
-      var defferedArg = arg;
-      doQuery(
-        {
-          queryType: 'search',
-          dataSource: this.datasource
-        },
-        this.query
-      ).then(
-        function (val)
-        {
-          var retVal = { data:[] };
-          if (val.length > 0) {
-            retVal.data = val.map(
-              function (res) {
-                return res.result.map(
-                  function (result) {
-                    var selectItem = { "id": result.value, "text": result.value };
-                    return selectItem;
-                  }
-                );
-              }
-            );
-          }
-          return retVal;
-        }
-      ).then(
-        function (finalResult)
-        {
-          defferedArg.resolve(finalResult.data[0]);
-        }
-      );
-    }
+var TypeAheadObject = Ember.ObjectProxy.extend({
+  populateTypeAheadList: function (arg) {
+    var defferedArg = arg;
+    doQuery({
+        queryType: 'search',
+        dataSource: this.datasource
+    }, this.query).then( val => {
+      var retVal = { data:[] };
+      if (val.length > 0) {
+        retVal.data = val.map( res => {
+          return res.result.map(
+            result => ({ "id": result.value, "text": result.value })
+          );
+        });
+      }
+      return retVal;
+    }).then( finalResult =>
+      { return defferedArg.resolve(finalResult.data[0]); }
+    );
   }
-);
+});
 
 function momentAsMs(prop) {
   return Ember.computed(prop, function(key, val) {
