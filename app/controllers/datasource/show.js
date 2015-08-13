@@ -75,14 +75,12 @@ function buildFilter(dim, vals) {
 
 function doQuery() {
   var query = Ember.$.extend.apply(null, [{}].concat(Array.prototype.slice.call(arguments, 0)));
-
   if (query.filter != null) {
     var filters = Object.keys(query.filter)
       .filter(function(key){ return query.filter[key] != null; })
       .map(function(toFilter) {
                                return buildFilter(toFilter, query.filter[toFilter]);
                              });
-
     switch (filters.length) {
       case 0:
         query.filter = null;
@@ -106,92 +104,92 @@ function doQuery() {
   );
 }
 
-var TopKObject = Ember.ObjectProxy.extend(
+var TopKObject = Ember.ObjectProxy.extend({
+  getData: function ()
   {
-    getData: function ()
-    {
-      var self = this;
-      var dim = this.query.dimension;
-      var metric = this.query.metric;
+    var self = this;
+    var dim = this.query.dimension;
+    var metric = this.query.metric;
 
-      doQuery(
-        {
-          queryType: 'topN',
-          granularity: 'all',
-          dataSource: this.datasource,
-          threshold: 10
-        },
-        aggs,
-        this.query
-      ).then(
-        function (val)
-        {
-          var retVal = {title: dim, data: []};
-          if (val.length > 0) {
-            retVal.data = val[0].result.map(
-              function (res)
-              {
-                return { label: res[dim], amount: res[metric] };
-              }
-            );
-          }
-          return retVal;
-        }
-      ).then(
-        function (val)
-        {
-          self.set('content', val);
-        }
-      );
-    }
+    doQuery(
+      {
+        queryType: 'topN',
+        granularity: 'all',
+        dataSource: this.datasource,
+        threshold: 10
+      },
+      aggs,
+      this.query
+    ).then( val => {
+      var retVal = {title: dim, data: []};
+      if (val.length > 0) {
+        retVal.data = val[0].result.map(
+          res => ({ label: res[dim], amount: res[metric] })
+        );
+      }
+      return retVal;
+    }).then( val => {
+      self.set('content', val);
+    });
   }
-);
+});
 
-var TimeseriesObject = Ember.ObjectProxy.extend(
+var TimeseriesObject = Ember.ObjectProxy.extend({
+  getData: function ()
   {
-    getData: function ()
-    {
-      var self = this;
-
-      doQuery(
-        {
-          queryType: 'timeseries',
-          dataSource: this.datasource
-        },
-        aggs,
-        this.query
-      ).then(
-        function (val)
-        {
-          var retVal = { data:[] };
-          if (val.length > 0) {
-            retVal.data = metricDisplayOrder.map(function(metric){
-              return {
-                label: metric,
-                dimensions: ['time', metric],
-                data: val.map(
-                  function(res) {
-                    var v = {
-                      time: res.timestamp
-                    };
-                    v[metric] = res.result[metric];
-                    return v;
-                  }
-                )
+    var self = this;
+    doQuery(
+      {
+        queryType: 'timeseries',
+        dataSource: this.datasource
+      },
+      aggs,
+      this.query
+    ).then( val => {
+      var retVal = { data:[] };
+      if (val.length > 0) {
+        retVal.data = metricDisplayOrder.map( metric => {
+          return {
+            label: metric,
+            dimensions: ['time', metric],
+            data: val.map( res => {
+              var v = {
+                time: res.timestamp
               };
-            });
-          }
-          return retVal;
-        }
-      ).then(
-        function (val)
-        {
-          self.set('content', val);
-        }
-      );
-    }
+              v[metric] = res.result[metric];
+              return v;
+            })
+          };
+        });
+      }
+      return retVal;
+    }).then( val => {
+      self.set('content', val);
+    });
   }
-);
+});  
+
+var TypeAheadObject = Ember.ObjectProxy.extend({
+  populateTypeAheadList: function (arg) {
+    var defferedArg = arg;
+    doQuery({
+        queryType: 'search',
+        dataSource: this.datasource
+    }, this.query).then( val => {
+      var retVal = { data:[] };
+      if (val.length > 0) {
+        retVal.data = val.map( res => {
+          return res.result.map(
+            result => ({ "id": result.value, "text": result.value })
+          );
+        });
+      }
+      return retVal;
+    }).then( finalResult =>
+      { return defferedArg.resolve(finalResult.data[0]); }
+    );
+  }
+});
 
 function momentAsMs(prop) {
   return Ember.computed(prop, function(key, val) {
@@ -284,7 +282,12 @@ Ember.Controller.extend(
 
         Ember.run.debounce(this, this.refreshDataAfterFilterChange, 700/*ms*/);
 
+      },
+
+      searchDimension: function(dimSearchArgs) {
+        Ember.run.debounce(this, this.typeAheadList, dimSearchArgs, 200/*ms*/);
       }
+
     },
 
     refreshDataAfterFilterChange: function () {
@@ -295,7 +298,7 @@ Ember.Controller.extend(
         return this.get('endDate').valueOf() - this.get('startDate').valueOf();
     }.property('startDate', 'endDate'),
 
-    timeseriesData: function(){
+    timeseriesData: function() {
       if (Ember.isEmpty(this.get('model.id'))) {
         return null;
       }
@@ -313,8 +316,7 @@ Ember.Controller.extend(
       return retVal;
     }.property('timeGranularity', 'interval', 'runCount'),
 
-    topKData: function ()
-    {
+    topKData: function () {
       if (Ember.isEmpty(this.get('model.id'))) {
         return null;
       }
@@ -337,6 +339,27 @@ Ember.Controller.extend(
         }.bind(this)
       );
 
-    }.property('model.dimensions.[]', 'runCount', 'interval', 'metric')
+    }.property('model.dimensions.[]', 'runCount', 'interval', 'metric'),
+
+    typeAheadList: function (arg) {
+      var searchDimension = arg.dimName;
+      var searchValue = arg.dimValue;
+      var deffered = arg.deffered;
+      var typeAheadObj = TypeAheadObject.create({
+        datasource: this.get('model.id'),
+        query: {
+          granularity: 'all',
+          intervals: this.get('interval'),
+          filter: this.get('dimensionFilters'),
+          searchDimensions: [ searchDimension ],
+          limit: 50,
+          query: {
+            type: "insensitive_contains",
+            value: searchValue
+          }
+        }
+      });
+      typeAheadObj.populateTypeAheadList(deffered);
+    }
   }
 );
