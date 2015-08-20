@@ -21,7 +21,7 @@ module.exports = function(environment) {
     modulePrefix: 'druid-ui',
     environment: environment,
     baseURL: '/',
-    locationType: 'auto',
+    locationType: 'hash',
     contentSecurityPolicy: {
       'style-src': '* unsafe-inline'
     },
