@@ -3,7 +3,7 @@
 
 This README outlines the details of collaborating on this Ember application.
 
-This is a relatively simple initial take on a dashboard for Druid.  It uses timeseries and top list queries to 
+This is a relatively simple initial take on a dashboard for Druid.  It uses timeseries and top list queries to
 populate timeseries graphs and dimensional tables that can be used for filtering.
 
 ## Prerequisites
@@ -17,15 +17,15 @@ You will need the following things properly installed on your computer.
 * [PhantomJS](http://phantomjs.org/)
 
 If you are on a Mac, you can get all of this stuff by first having [homebrew](http://brew.sh/) installed.  Then
- 
+
  ```
  brew install git node
  npm install -g bower
  npm install -g ember-cli
  ```
- 
- If you are not on a mac, then you will have to get `git` and `node` on your own, but the `npm install` commands 
- should still be relevant. 
+
+ If you are not on a mac, then you will have to get `git` and `node` on your own, but the `npm install` commands
+ should still be relevant.
 
 ## Installation
 
@@ -63,7 +63,7 @@ Make use of the many generators for code, try `ember help generate` for more det
 
 ### Deploying
 
-Specify what it takes to deploy your app.
+One of the ways to deploy the app is to serve it from a Druid Broker using [static_ui](https://github.com/yahoo/druid-extensions/tree/master/static_ui#static_ui) druid extension. Please visit the link for further instructions.
 
 ## Further Reading / Useful Links
 
@@ -72,4 +72,3 @@ Specify what it takes to deploy your app.
 * Development Browser Extensions
   * [ember inspector for chrome](https://chrome.google.com/webstore/detail/ember-inspector/bmdblncegkenkacieihfhpjfppoconhi)
   * [ember inspector for firefox](https://addons.mozilla.org/en-US/firefox/addon/ember-inspector/)
-
