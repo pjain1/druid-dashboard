@@ -65,6 +65,11 @@ Make use of the many generators for code, try `ember help generate` for more det
 
 Specify what it takes to deploy your app.
 
+### Screenshots
+
+![Dashboard](/screenshots/screen1.png)
+![Search Dimension](/screenshots/screen2.png)
+
 ## Further Reading / Useful Links
 
 * [ember.js](http://emberjs.com/)
